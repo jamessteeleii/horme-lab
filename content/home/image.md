@@ -21,8 +21,8 @@ design:
     image: actual_effort.jpg
     image_darken: 0
     image_parallax: false
-    image_position: contain
-    image_size: cover
+    image_position: center
+    image_size: contain
     text_color_light: true
   spacing:
     padding: ["0", "0", "0", "0"]
