@@ -6,8 +6,9 @@ title: James Steele
 superuser: true
 
 # Role/position
-role: Associate Professor of Sport and Exercise Science
-Director of Steele Research Ltd
+role: 
+- Associate Professor of Sport and Exercise Science
+- Director of Steele Research Ltd
 
 # Organizations/Affiliations
 organizations:
