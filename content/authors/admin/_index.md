@@ -7,7 +7,7 @@ superuser: true
 
 # Role/position
 role: Associate Professor of Sport and Exercise Science 
-role: Director of Steele Research Ltd
+  - role: Director of Steele Research Ltd
 
 # Organizations/Affiliations
 organizations:
