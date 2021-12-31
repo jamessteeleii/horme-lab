@@ -13,13 +13,13 @@ interval: 5000
 # Minimum slide height.
 # Specify a height to ensure a consistent height for each slide.
 height: 2000px
-width: 2000px
+width: 1125px
 
 
 item:
   - title: 
     overlay_img: actual_effort.jpg
-    align: center
+    overlay_align: center
     
   - title: 
     overlay_img: robot.jpg
