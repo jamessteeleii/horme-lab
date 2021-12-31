@@ -33,7 +33,7 @@ The following pre-print article represents the latest in my conceptualisation of
 
 <div align="center">
 
-##[What is (perception of) effort? Objective and subjective effort during attempted task performance](https://psyarxiv.com/kbyhm) 
+## [What is (perception of) effort? Objective and subjective effort during attempted task performance](https://psyarxiv.com/kbyhm) 
 
 <div align="left">
 
