@@ -29,7 +29,7 @@ draft: false
 projects: []
 ---
 
-The following pre-print article represents the latest in my conceptualisation of both effort, and its perception. My intention is for it to make this clear for others such that my forthcoming, and past work, can be interpreted in its light. It is a *living* document that I update as my understanding grows, and thus I am always interested to hear feedback from others and to incorporate this. I have previously submitted this manuscript to peer-reviewed journals in both philosophy and psychology with generally positive comments. However, I have decided to keep it as the present *living* document to allow me to maintain its form and style to my liking, whilst being able to update its content. 
+The following pre-print article represents the latest in my conceptualisation of both effort, and its perception. It is a *living* document that I update as my understanding grows, and thus I am always interested to hear feedback from others. I have previously submitted this manuscript to peer-reviewed journals in both philosophy and psychology with generally positive comments. However, I have decided to keep it as the present *living* document to allow me to maintain its form and style to my liking, whilst being able to update its content. 
 
 <div align="center">
 
