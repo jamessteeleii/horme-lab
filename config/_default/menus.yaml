@@ -7,6 +7,7 @@ main:
   - name: What is (perception of) effort
     url: https://hormelab.com/what_is_effort  # The URL of your page.
     weight: 10  # The position of your page in the menu.
+    new_tab: false
   - name: Posts
     url: post
     weight: 20
