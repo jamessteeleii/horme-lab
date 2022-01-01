@@ -19,4 +19,4 @@ design:
 
 In Greek mythology the spirit *Horme* (/ˈhɔːrmiː/; Ancient Greek: Ὁρμή) personified energetic activity, impulse, or *effort* (to do a thing). But what is *effort*? What is it to perceive *effort*? 
 
-Within *Horme Lab* we seek to explore and identify the nature of effort, and it's perception.
+Within *Horme Lab* we seek to explore and identify the nature of effort, and its perception.
