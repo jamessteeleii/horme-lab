@@ -17,7 +17,7 @@ projects: []
 ---
 Some may be wondering where the name *Horme* has come from. Well, obviously it stems from the Ancient Greek spirit as noted on the homepage for the site. But, its specific formation has a little bit of nuance to it.
 
-In my [article](what_is_effort/) where I discuss and propose conceptual definitions for both effort, and the perception of effort, a consistent theme throughout is the problems that can arise from imprecision in language and inconsistency in the labels we use for concepts in science [^1]. For example, I refer to the excellent [paper](https://pubmed.ncbi.nlm.nih.gov/31682141/) by Alan Fiske on what he refers to as the *The Lexical Fallacy*. Fiske notes than many terms used, particularly those for seemingly commonsense concepts, come with a considerable amount of lexical 'baggage' and 'hang-ups'. 
+In my [article](https://www.hormelab.com/what_is_effort/) where I discuss and propose conceptual definitions for both effort, and the perception of effort, a consistent theme throughout is the problems that can arise from imprecision in language and inconsistency in the labels we use for concepts in science [^1]. For example, I refer to the excellent [paper](https://pubmed.ncbi.nlm.nih.gov/31682141/) by Alan Fiske on what he refers to as the *The Lexical Fallacy*. Fiske notes than many terms used, particularly those for seemingly commonsense concepts, come with a considerable amount of lexical 'baggage' and 'hang-ups'. 
 
 Arguably, in proposing *stronger* conceptual definitions it was also tempting to consider the possibility of dropping the term *effort* altogether. In fact, I made this somewhat radical suggestion in my article:
 
