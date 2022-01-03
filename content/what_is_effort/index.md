@@ -3,7 +3,7 @@
 
 title: "What is (perception of) effort?"
 subtitle: ""
-summary: "A brief welcome to the long overdue site, and what to expect from it going forwards"
+summary: "Objective and subjective effort during attempted task performance"
 authors: []
 tags: []
 categories: []
