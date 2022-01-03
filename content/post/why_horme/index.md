@@ -29,7 +29,7 @@ However, dropping terms that are already a well established part of the scientif
 
 But, I just couldn't get the term *Horme* out of my head. So I had to come up with somewhere to use... and so, **Horme Lab** was born!
 
-Language is a funny thing though, and even this bore the potential for confusion to arise. In Ancient Greek the work is written Ὁρμή and pronounced Ormí. In modern Greek this word still exists though and means *momentum* in the Newtonian sense. 
+Language is a funny thing though, and even this bore the potential for confusion to arise. In Ancient Greek the word is written Ὁρμή and pronounced Ormí. In modern Greek this word still exists though and means *momentum* in the Newtonian sense. 
 
 So, to avoid confusion, I'm adopting the word as written in English:
 
@@ -42,4 +42,4 @@ Horme (pronounced with a hard /h/ - as in /ˈhɔːmi/)
 So there you have it. The origin of *Horme Lab's* name.
 
 
-[^1]: While I certainly think that we should strive for greater precision in the conceptual definitions we use, and of course the labels used as their placeholders in communication, I should note that I am not dogmatic in this sense. I tend to agree with Paul Meehl's notion of 'open concepts' being valuable at least in the early stages of a research programme (which I think has been the case for the topic of *effort* and without the research conducted on this whilst still underdetermined I probably would not have been stimulated to pursue greater it) though the aim should be for greater precision to emerge as our understanding improves.
+[^1]: While I certainly think that we should strive for greater precision in the conceptual definitions we use, and of course the labels used as their placeholders in communication, I should note that I am not dogmatic in this sense. I tend to agree with Paul Meehl's notion of 'open concepts' being valuable at least in the early stages of a research programme (which I think has been the case for the topic of *effort* and without the research conducted on this whilst still underdetermined I probably would not have been stimulated to pursue it in this regard) though the aim should be for greater precision to emerge as our understanding improves.
