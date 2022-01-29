@@ -113,7 +113,7 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 ##  9 p002     91.5 90             98.3        1
 ## 10 p002     91.5 100           100          0</code></pre>
 <p>Now, given the kind of test completed here (i.e., lifting different loads) it is reasonable to use the 1PL model mentioned above because there is no guessing or lapsing, nor do different items differentiate people of different abilities differently (it’s a toy example so we’re building these assumptions in). I’m going to follow an approach using Bayesian mixed effect modelling using weakly regularising priors to fit the initial 1PL model using the {brms} package which I won’t go into detail about here<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>. I’ll use Bayesian models for the following parts also with default priors to keep the approach consistent.</p>
-<p>So we fit the 1PL model and we can plot the ICCs for each load which look like this:</p>
+<p>So we fit the 1PL model and we can plot the ICCs<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a> for each load which look like this:</p>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>So it’s pretty clear that the model recognises that people are more likely to lift lighter loads than heavier loads, and that people with a greater strength ability are also more likely to lift a given load. We do have some loads though that are just incredibly easy such that pretty much anyone can lift them, and conversely so incredible difficult that no one can lift them.</p>
 <p>After we fit the 1PL model we we can then extract the random effects by person and item, namely <span class="math inline">\(\theta_{j}\)</span> and <span class="math inline">\(\beta_{i}\)</span>. What we want to do is examine their relationship with the ‘measured’ raw 1RM and loads respectively so we can determine the linear transformation needed to convert <span class="math inline">\(\theta_{j}\)</span> and <span class="math inline">\(\beta_{i}\)</span> back to the raw kg units <span class="math inline">\(\theta_{j(transf)}\)</span> and <span class="math inline">\(\beta_{i(transf)}\)</span>.</p>
@@ -128,12 +128,12 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept   101.56      0.40   100.79   102.32 1.00     3531     2971
-## theta         3.73      0.06     3.61     3.86 1.00     4066     2805
+## Intercept   101.60      0.42   100.78   102.40 1.00     3812     2737
+## theta         3.75      0.06     3.63     3.87 1.00     4386     2333
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     4.06      0.29     3.52     4.66 1.00     3647     2964
+## sigma     4.06      0.30     3.52     4.70 1.00     4550     3241
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -149,12 +149,12 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept   103.19      1.85    99.57   106.78 1.00     3288     2742
-## beta          3.66      0.12     3.42     3.89 1.00     2921     2320
+## Intercept   103.27      1.84    99.61   106.94 1.00     3572     2898
+## beta          3.67      0.12     3.44     3.89 1.00     3457     2568
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     8.02      1.51     5.73    11.66 1.00     3051     2502
+## sigma     8.04      1.45     5.82    11.40 1.00     3021     2678
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -167,28 +167,28 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 {\theta_{j(transf)}} \times 100%\]</span></p>
 <p><span class="math display">\[\beta_{i(transf)} &gt; \theta_{j(transf)} \Rightarrow E_{A,(ji,IRT)} = 100%\]</span></p>
 <p>Now we have two sets of actual effort in our dataset; we have the original actual effort calculated directly from the 1RM and loads (<span class="math inline">\(E_{A(ji)}\)</span>) and also and effort calculated from our transformed estimates of ability and difficulty (<span class="math inline">\(E_{A(ji,IRT)}\)</span>).</p>
-<pre><code>##    person   one_RM item actual_effort    theta       beta theta_to_raw
-## 1    p001 103.3932   10      9.671814 1.277936 -24.055144     106.3304
-## 2    p001 103.3932   20     19.343628 1.277936 -24.013713     106.3304
-## 3    p001 103.3932   30     29.015442 1.277936 -16.883841     106.3304
-## 4    p001 103.3932   40     38.687256 1.277936 -16.881152     106.3304
-## 5    p001 103.3932   50     48.359070 1.277936 -16.938071     106.3304
-## 6    p001 103.3932   60     58.030884 1.277936 -13.208960     106.3304
-## 7    p001 103.3932   70     67.702698 1.277936 -10.119876     106.3304
-## 8    p001 103.3932   80     77.374512 1.277936  -6.320877     106.3304
-## 9    p001 103.3932   90     87.046326 1.277936  -3.838160     106.3304
-## 10   p001 103.3932  100     96.718140 1.277936  -0.311394     106.3304
+<pre><code>##    person   one_RM item actual_effort    theta        beta theta_to_raw
+## 1    p001 103.3932   10      9.671814 1.269975 -23.9282114     106.3571
+## 2    p001 103.3932   20     19.343628 1.269975 -23.9616414     106.3571
+## 3    p001 103.3932   30     29.015442 1.269975 -16.8666506     106.3571
+## 4    p001 103.3932   40     38.687256 1.269975 -16.8651184     106.3571
+## 5    p001 103.3932   50     48.359070 1.269975 -16.8753233     106.3571
+## 6    p001 103.3932   60     58.030884 1.269975 -13.2351487     106.3571
+## 7    p001 103.3932   70     67.702698 1.269975 -10.1587614     106.3571
+## 8    p001 103.3932   80     77.374512 1.269975  -6.3751581     106.3571
+## 9    p001 103.3932   90     87.046326 1.269975  -3.9015377     106.3571
+## 10   p001 103.3932  100     96.718140 1.269975  -0.3858035     106.3571
 ##    beta_to_raw irt_effort
-## 1     15.25604   14.34777
-## 2     15.40748   14.49020
-## 3     41.46978   39.00087
-## 4     41.47960   39.01011
-## 5     41.27154   38.81443
-## 6     54.90281   51.63416
-## 7     66.19455   62.25364
-## 8     80.08128   75.31363
-## 9     89.15652   83.84857
-## 10   102.04814   95.97268</code></pre>
+## 1     15.55210   14.62253
+## 2     15.42955   14.50730
+## 3     41.44021   38.96328
+## 4     41.44582   38.96856
+## 5     41.40841   38.93338
+## 6     54.75351   51.48083
+## 7     66.03173   62.08493
+## 8     79.90265   75.12677
+## 9     88.97109   83.65318
+## 10   101.85998   95.77168</code></pre>
 <p>Now, because we have multiple observations for each individuals we can fit a mixed effects model with random intercepts and slopes to explore how well the <span class="math inline">\(E_{A(ji,IRT)}\)</span> estimates <span class="math inline">\(E_{A(ji)}\)</span>.</p>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>This doesn’t look too bad to be fair. In fact, it’s pretty darn good in my opinion. The overall fixed effect estimate is almost perfectly on the identity which would leave me feeling fairly confident in using <span class="math inline">\(E_{A(ji,IRT)}\)</span> as my operatational estimate <span class="math inline">\(E_{A(ji)}\)</span>.</p>
@@ -204,11 +204,12 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 <ol>
 <li id="fn1"><p>Markus, K. A. (2008). Constructs, concepts and the worlds of possibility: Connecting the measurement, manipulation, and meaning of variables. Measurement: Interdisciplinary Research and Perspectives, 6(1-2), 54–77. <a href="https://doi.org/10.1080/15366360802035513" class="uri">https://doi.org/10.1080/15366360802035513</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>I’ll use<span class="math inline">\(j\)</span> here to denote the individual instead of<span class="math inline">\(i\)</span> as I do in the original paper, to be in keeping with the typical notation used in Item Response Theory models that follows because <span class="math inline">\(i\)</span> is used for the ‘item’.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>To be fair, the <a href="https://en.wikipedia.org/wiki/Item_response_theory">Wikipedia page</a> on IRT provides a pretty good overview as expected. But I do like Fundamentals of Item Response Theory by R. K. Hambleton, H. Swaminathan, and H. J. Rogers as a strong intro text that’s pretty short (only ~150 pages exlcuding appendices etc.)<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>To be fair, the <a href="https://en.wikipedia.org/wiki/Item_response_theory">Wikipedia page</a> on IRT provides a pretty good overview as expected. But I do like Fundamentals of Item Response Theory by R. K. Hambleton, H. Swaminathan, and H. J. Rogers as a strong intro text that’s pretty short (only ~150 pages excluding appendices etc.)<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 <li id="fn4"><p>Note, for my purposes here I am going with the ‘difficulty’, but if we wanted ‘easiness’ we would use <span class="math inline">\(\alpha_{i}\theta_{j}+\beta_{i}\)</span>.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
 <li id="fn5"><p>For those unfamiliar, in practice this is normally achieved within 3-5 attempts so as to not allow cumulative fatigue to unduly influence the estimate of maximum strength.<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
 <li id="fn6"><p>I used Lisa DeBruine’s great package {faux} for this, which I tend to use for a lot of simulation as it’s so intuitive. Check it out <a href="https://debruine.github.io/faux/">here</a>.<a href="#fnref6" class="footnote-back">↩︎</a></p></li>
 <li id="fn7"><p>I’ve deliberately chose someone with a 1RM &lt; 100 kg so it’s clear that the response is dependent on the relationship between that and the load lifted.<a href="#fnref7" class="footnote-back">↩︎</a></p></li>
 <li id="fn8"><p>But, take a look at at the great papers by by Paul Bürkner <a href="https://arxiv.org/abs/1905.09501">here</a> and <a href="https://www.mdpi.com/2079-3200/8/1/5/htm">here</a> who authored the {brms} package - see <a href="https://www.jstatsoft.org/article/view/v080i01">here</a>.<a href="#fnref8" class="footnote-back">↩︎</a></p></li>
+<li id="fn9"><p>Credit to Solomon Kurz for his great <a href="https://solomonkurz.netlify.app/post/2021-06-29-make-icc-plots-for-your-brms-irt-models/">post</a> on wrangling {brms} models to create these ICC plots.<a href="#fnref9" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>

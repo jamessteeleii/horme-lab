@@ -199,7 +199,7 @@ oneRM_dat %>%
 
 Now, given the kind of test completed here (i.e., lifting different loads) it is reasonable to use the 1PL model mentioned above because there is no guessing or lapsing, nor do different items differentiate people of different abilities differently (it's a toy example so we're building these assumptions in). I'm going to follow an approach using Bayesian mixed effect modelling using weakly regularising priors  to fit the initial 1PL model using the {brms} package which I won't go into detail about here[^8]. I'll use Bayesian models for the following parts also with default priors to keep the approach consistent. 
 
-So we fit the 1PL model and we can plot the ICCs for each load which look like this:
+So we fit the 1PL model and we can plot the ICCs[^9] for each load which look like this:
 
 ```{r, echo=FALSE, message=FALSE}
 formula_1pl <- bf(
@@ -386,7 +386,7 @@ comb_effort_p <- comb_effort %>%
   scale_y_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
   scale_x_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
   labs(title = "Calculated Actual Effort and IRT (1PL) Estimated Actual Effort",
-       x = expression("E"[A(ji,transf)]~"(Actual effort estimated from IRT model; %)"),
+       x = expression("E"[A(ji,IRT)]~"(Actual effort estimated from IRT model; %)"),
        y = expression("E"[A(ji)]~"(Actual effort calculated directly; %)")) +
   theme_classic()
 
@@ -407,9 +407,10 @@ Further, I do not think that such models are limited to only cognitive tasks. As
 
 [^1]: Markus, K. A. (2008). Constructs, concepts and the worlds of possibility: Connecting the measurement, manipulation, and meaning of variables. Measurement: Interdisciplinary Research and Perspectives, 6(1-2), 54–77. https://doi.org/10.1080/15366360802035513
 [^2]: I'll use$j$ here to denote the individual instead of$i$ as I do in the original paper, to be in keeping with the typical notation used in Item Response Theory models that follows because $i$ is used for the 'item'. 
-[^3]: To be fair, the [Wikipedia page](https://en.wikipedia.org/wiki/Item_response_theory) on IRT provides a pretty good overview as expected. But I do like Fundamentals of Item Response Theory by R. K. Hambleton, H. Swaminathan, and H. J. Rogers as a strong intro text that's pretty short (only ~150 pages exlcuding appendices etc.)
+[^3]: To be fair, the [Wikipedia page](https://en.wikipedia.org/wiki/Item_response_theory) on IRT provides a pretty good overview as expected. But I do like Fundamentals of Item Response Theory by R. K. Hambleton, H. Swaminathan, and H. J. Rogers as a strong intro text that's pretty short (only ~150 pages excluding appendices etc.)
 [^4]:  Note, for my purposes here I am going with the 'difficulty', but if we wanted 'easiness' we would use $\alpha_{i}\theta_{j}+\beta_{i}$.
 [^5]: For those unfamiliar, in practice this is normally achieved within 3-5 attempts so as to not allow cumulative fatigue to unduly influence the estimate of maximum strength. 
 [^6]: I used Lisa DeBruine's great package {faux} for this, which I tend to use for a lot of simulation as it's so intuitive. Check it out [here](https://debruine.github.io/faux/).
 [^7]: I've deliberately chose someone with a 1RM < 100 kg so it's clear that the response is dependent on the relationship between that and the load lifted.
 [^8]: But, take a look at at the great papers by by Paul Bürkner [here](https://arxiv.org/abs/1905.09501) and [here](https://www.mdpi.com/2079-3200/8/1/5/htm) who authored the {brms} package - see [here](https://www.jstatsoft.org/article/view/v080i01).
+[^9]: Credit to Solomon Kurz for his great [post](https://solomonkurz.netlify.app/post/2021-06-29-make-icc-plots-for-your-brms-irt-models/) on wrangling {brms} models to create these ICC plots.
