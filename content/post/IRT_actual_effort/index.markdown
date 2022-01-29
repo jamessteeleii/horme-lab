@@ -1,7 +1,7 @@
 ---
 title: "Actual Effort in Cognitive Tasks"
 subtitle: Can Item Response Theory help with operationalisation?
-date: '2022-01-24T16:06:15Z'
+date: '2022-01-29T16:06:15Z'
 output:
   html_document: 
     df_print: paged
@@ -11,7 +11,7 @@ categories: []
 summary: Item Response Theory assumes latent abilities, and varying difficulties for
   items... both could be useful, given my conceptual definition, for operationalising
   actual effort
-lastmod: '2022-01-24T16:06:15Z'
+lastmod: '2022-01-29T16:06:15Z'
 featured: no
 draft: no
 image:
@@ -21,6 +21,8 @@ preview_only: no
 projects: []
 authors: []
 ---
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
 In my article titled ["What is (perception of) effort? Objective and subjective effort during attempted task performance"](https://www.hormelab.com/what_is_effort/) I offer clear conceptual definitions of both _actual_ effort (objective) and _perception of_ effort (subjective). Clear conceptual definitions are key for determining whether a given operationalisation of those definitions (i.e., our ways of defining those variables in the context of our research) meet the necessary and sufficient conditions adequately for the theoretical unit of interest. 
@@ -171,12 +173,12 @@ lm_1RM
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept   101.60      0.41   100.82   102.39 1.00     3902     3274
-## theta         3.73      0.06     3.61     3.85 1.00     4084     2791
+## Intercept   101.59      0.41   100.78   102.39 1.00     3423     2664
+## theta         3.74      0.06     3.61     3.85 1.00     3523     2901
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     4.04      0.30     3.50     4.69 1.00     4276     2946
+## sigma     4.05      0.29     3.54     4.66 1.00     3838     2990
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -202,12 +204,12 @@ lm_loads
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept   103.30      1.79    99.75   106.77 1.00     3471     2677
-## beta          3.65      0.12     3.41     3.89 1.00     3102     2203
+## Intercept   103.11      1.74    99.64   106.45 1.00     3458     2775
+## beta          3.66      0.12     3.44     3.89 1.00     2889     2374
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     7.98      1.45     5.73    11.25 1.00     2994     2279
+## sigma     7.96      1.46     5.65    11.45 1.00     2804     2547
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -231,27 +233,27 @@ Now we have two sets of actual effort in our dataset; we have the original actua
 
 ```
 ##    person   one_RM item actual_effort    theta        beta theta_to_raw
-## 1    p001 103.3932   10      9.671814 1.254077 -24.0919611     106.2798
-## 2    p001 103.3932   20     19.343628 1.254077 -24.0583619     106.2798
-## 3    p001 103.3932   30     29.015442 1.254077 -16.8929429     106.2798
-## 4    p001 103.3932   40     38.687256 1.254077 -16.9043446     106.2798
-## 5    p001 103.3932   50     48.359070 1.254077 -16.9107484     106.2798
-## 6    p001 103.3932   60     58.030884 1.254077 -13.2611575     106.2798
-## 7    p001 103.3932   70     67.702698 1.254077 -10.1749900     106.2798
-## 8    p001 103.3932   80     77.374512 1.254077  -6.3983608     106.2798
-## 9    p001 103.3932   90     87.046326 1.254077  -3.9232837     106.2798
-## 10   p001 103.3932  100     96.718140 1.254077  -0.3893219     106.2798
+## 1    p001 103.3932   10      9.671814 1.257476 -23.9661637      106.287
+## 2    p001 103.3932   20     19.343628 1.257476 -24.0118538      106.287
+## 3    p001 103.3932   30     29.015442 1.257476 -16.8671727      106.287
+## 4    p001 103.3932   40     38.687256 1.257476 -16.8624437      106.287
+## 5    p001 103.3932   50     48.359070 1.257476 -16.8498282      106.287
+## 6    p001 103.3932   60     58.030884 1.257476 -13.2161915      106.287
+## 7    p001 103.3932   70     67.702698 1.257476 -10.0956591      106.287
+## 8    p001 103.3932   80     77.374512 1.257476  -6.3154521      106.287
+## 9    p001 103.3932   90     87.046326 1.257476  -3.8288550      106.287
+## 10   p001 103.3932  100     96.718140 1.257476  -0.3088341      106.287
 ##    beta_to_raw irt_effort
-## 1     15.32647   14.42088
-## 2     15.44917   14.53632
-## 3     41.61569   39.15674
-## 4     41.57405   39.11756
-## 5     41.55066   39.09556
-## 6     54.87816   51.63557
-## 7     66.14815   62.23965
-## 8     79.93956   75.21617
-## 9     88.97799   83.72054
-## 10   101.88324   95.86325
+## 1     15.32740   14.42077
+## 2     15.16005   14.26331
+## 3     41.32910   38.88443
+## 4     41.34642   38.90073
+## 5     41.39263   38.94420
+## 6     54.70167   51.46599
+## 7     66.13134   62.21958
+## 8     79.97722   75.24646
+## 9     89.08496   83.81546
+## 10   101.97785   95.94572
 ```
 
 Now, because we have multiple observations for each individuals we can fit a mixed effects model with random intercepts and slopes to explore how well the `\(E_{A(ji,IRT)}\)` estimates `\(E_{A(ji)}\)`.

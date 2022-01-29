@@ -63,7 +63,7 @@ address_format: en-us
 # Site features
 
 highlight: false
-math: true
+math: false
 diagram: false
 privacy_pack: false
 show_related:

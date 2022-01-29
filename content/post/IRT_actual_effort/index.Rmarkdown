@@ -1,7 +1,7 @@
 ---
 title: "Actual Effort in Cognitive Tasks"
 subtitle: Can Item Response Theory help with operationalisation?
-date: '2022-01-24T16:06:15Z'
+date: '2022-01-29T16:06:15Z'
 output:
   html_document: 
     df_print: paged
@@ -11,7 +11,7 @@ categories: []
 summary: Item Response Theory assumes latent abilities, and varying difficulties for
   items... both could be useful, given my conceptual definition, for operationalising
   actual effort
-lastmod: '2022-01-24T16:06:15Z'
+lastmod: '2022-01-29T16:06:15Z'
 featured: no
 draft: no
 image:
@@ -21,6 +21,8 @@ preview_only: no
 projects: []
 authors: []
 ---
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 ```{r, echo=FALSE, message=FALSE}
 library(tidyverse)
