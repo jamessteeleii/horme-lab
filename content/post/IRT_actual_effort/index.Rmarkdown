@@ -2,10 +2,10 @@
 title: "Actual Effort in Cognitive Tasks"
 subtitle: Can Item Response Theory help with operationalisation?
 date: '2022-01-24T16:06:15Z'
-output:
+output: html_document
   html_document:
     df_print: paged
-  pdf_document: default
+  pdf_document: 
 tags: []
 categories: []
 summary: Item Response Theory assumes latent abilities, and varying difficulties for
