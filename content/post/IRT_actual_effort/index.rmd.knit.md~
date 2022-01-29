@@ -24,13 +24,7 @@ authors: []
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-```{r, echo=FALSE, message=FALSE}
-library(tidyverse)
-library(faux)
-library(lme4)
-library(brms)
-library(patchwork)
-```
+
 In my article titled ["What is (perception of) effort? Objective and subjective effort during attempted task performance"](https://www.hormelab.com/what_is_effort/) I offer clear conceptual definitions of both _actual_ effort (objective) and _perception of_ effort (subjective). Clear conceptual definitions are key for determining whether a given operationalisation of those definitions (i.e., our ways of defining those variables in the context of our research) meet the necessary and sufficient conditions adequately for the theoretical unit of interest. 
 
 In this post I will attempt to provide a solution for a problem I have thought about for a while; namely, how best to operationalise actual effort in cognitive tasks. As I will explain, unlike many physical tasks where operationalisation is fairly trivial, it is not quite so simple to do so for tasks where the underlying capacity that disposes an individual to be able to attempt and perhaps complete the task is not directly observable nor is the demand that the task presents.
@@ -97,61 +91,11 @@ In this model there are four key parameters as the name suggests, which reflect 
 
 An Item Characteristic Curve (ICC) is usually used to visualise the relationship between ability and the probability of a correct response to items. So for example, a 4PL model might look something like:
 
-```{r, echo=FALSE}
-
-data.frame(beta=0,
-           alpha=1,
-           gamma=0.1,
-           psi=0.1
-           ) %>%
-  tidyr::expand(nesting(beta,
-                        alpha,
-                        gamma,
-                        psi
-                        ),
-              theta = seq(from = -6, to = 6, length.out = 200)) %>%
-  mutate(p = gamma + (1-gamma-psi) * brms::inv_logit_scaled(exp(alpha)*theta-beta)) %>%
-  ggplot(aes(x = theta, y = p)) +
-  geom_line() +
-  scale_y_continuous(limits = c(0,1)) +
-    labs(title = "ICC for the 4PL",
-         subtitle = expression(beta~"=0,"~alpha~"=1,"~gamma~"=0.1,"~psi~"=0.1"),
-         x = expression(theta~('ability on the logit scale')),
-         y = expression(italic(p)(y==1)),
-         color = "Load (kg)") +
-    theme_classic() +
-    theme(legend.text = element_text(size = 8),
-          legend.title = element_text(size=10))
-```
+<img src="index.rmd_files/figure-html/unnamed-chunk-2-1.png" width="672" />
 
 Different models make different assumptions about these parameters. For example, the simplest one-parameter logistic model (1PL or Rasch model) assumes that $\alpha=1$ and both $\gamma=0$ and $\psi=0$; that is to say, items discriminate between higher and lower abilities equally well and there is no guessing or lapses occurring. A model of that kind might look like:
 
-```{r, echo=FALSE}
-
-data.frame(beta=0,
-           alpha=1,
-           gamma=0,
-           psi=0
-           ) %>%
-  tidyr::expand(nesting(beta,
-                        alpha,
-                        gamma,
-                        psi
-                        ),
-              theta = seq(from = -6, to = 6, length.out = 200)) %>%
-  mutate(p = gamma + (1-gamma-psi) * brms::inv_logit_scaled(exp(alpha)*theta-beta)) %>%
-  ggplot(aes(x = theta, y = p)) +
-  geom_line() +
-  scale_y_continuous(limits = c(0,1)) +
-    labs(title = "ICC for the 1PL",
-         subtitle = expression(beta~"=0,"~alpha~"=1,"~gamma~"=0,"~psi~"=0"),
-         x = expression(theta~('ability on the logit scale')),
-         y = expression(italic(p)(y==1)),
-         color = "Load (kg)") +
-    theme_classic() +
-    theme(legend.text = element_text(size = 8),
-          legend.title = element_text(size=10))
-```
+<img src="index.rmd_files/figure-html/unnamed-chunk-3-1.png" width="672" />
 
 In general though, the application of an IRT model allows for test data to be decomposed into an estimate of the characteristic of the individual (i.e., their _ability_, $\theta_{j}$). For my purpose today though, the other parameter of such models that is of primary iterest is the estimates of the test items location (i.e., their _difficulty_, $\beta_{i}$).
 
@@ -182,82 +126,28 @@ Let's simulate some data[^6] and see what it looks like. We sample$\ n=100$ indi
 
 An example of data for an individual showing the first 10 loads looks like this[^7]:
 
-```{r, echo=FALSE}
-set.seed(1988)
-oneRM_dat <- add_random(person = 100) %>%
-  add_ranef("person", one_RM = 25) %>%
-  add_within("person", item = seq(from = 10, to = 200, by=10)) %>%
-  mutate(person = as.factor(person),
-         item = as.numeric(item)*10,
-         one_RM = one_RM+100,
-         actual_effort = if_else(one_RM >= item, (item/one_RM)*100, 100),
-         response = if_else(one_RM >= item, 1, 0),
-         item = as.factor(item)
-  )
 
-oneRM_dat %>%
-  filter(one_RM < 100) %>%
-  slice(1:10)
+```
+## # A tibble: 10 x 5
+##    person one_RM item  actual_effort response
+##    <fct>   <dbl> <fct>         <dbl>    <dbl>
+##  1 p002     91.5 10             10.9        1
+##  2 p002     91.5 20             21.8        1
+##  3 p002     91.5 30             32.8        1
+##  4 p002     91.5 40             43.7        1
+##  5 p002     91.5 50             54.6        1
+##  6 p002     91.5 60             65.5        1
+##  7 p002     91.5 70             76.5        1
+##  8 p002     91.5 80             87.4        1
+##  9 p002     91.5 90             98.3        1
+## 10 p002     91.5 100           100          0
 ```
 
 Now, given the kind of test completed here (i.e., lifting different loads) it is reasonable to use the 1PL model mentioned above because there is no guessing or lapsing, nor do different items differentiate people of different abilities differently (it's a toy example so we're building these assumptions in). I'm going to follow an approach using Bayesian mixed effect modelling using weakly regularising priors  to fit the initial 1PL model using the {brms} package which I won't go into detail about here[^8]. I'll use Bayesian models for the following parts also with default priors to keep the approach consistent. 
 
 So we fit the 1PL model and we can plot the ICCs for each load which look like this:
 
-```{r, echo=FALSE, message=FALSE}
-formula_1pl <- bf(
-  formula = response ~ 1 + (1 | item) + (1 | person),
-  family = brmsfamily("bernoulli", link = "logit")
-)
-
-prior_1pl <-
-  prior("normal(0, 2)", class = "Intercept") +
-  prior("normal(0, 3)", class = "sd", group = "person") +
-  prior("normal(0, 3)", class = "sd", group = "item")
-
-fit_1pl <- brm(
-  formula = formula_1pl,
-  data = oneRM_dat,
-  prior = prior_1pl,
-  chains = 4,
-  iter = 3000, warmup = 1000,
-  cores = 4,
-  control = list(adapt_delta = 0.95), inits = 0
-)
-
-post <- posterior_samples(fit_1pl)
-
-post <- post %>%
-  select(b_Intercept, starts_with("r_item")) %>%
-  mutate(iter = 1:n()) %>%
-  pivot_longer(starts_with("r_item"), names_to = "item", values_to = "xi") %>%
-  mutate(item = str_extract(item, "\\d+"))
-
-post_icc <- post %>%
-  tidyr::expand(nesting(iter, b_Intercept, item, xi),
-         theta = seq(from = -10, to = 10, length.out = 500)) %>%
-  mutate(p = inv_logit_scaled(b_Intercept + xi + theta)) %>%
-  group_by(theta, item) %>%
-  summarise(p = mean(p)) %>%
-  mutate(item = factor(item, levels = c("10","20","30","40","50","60","70","80","90","100","110","120","130","140","150","160","170","180","190","200")))
-
-icc_p <- post_icc %>%
-  ggplot(aes(x = theta, y = p, color = item)) +
-  geom_line() +
-  scale_color_viridis_d(option = "H") +
-  labs(title = "ICCs for the 1PL",
-       subtitle = "Each curve is based on the posterior mean.",
-       x = expression(theta~('ability on the logit scale')),
-       y = expression(italic(p)(y==1)),
-       color = "Load (kg)") +
-  theme_classic() +
-  theme(legend.text = element_text(size = 8),
-        legend.title = element_text(size=10)) +
-  guides(color=guide_legend(ncol=2))
-
-icc_p
-
-```
+<img src="index.rmd_files/figure-html/unnamed-chunk-5-1.png" width="672" />
 
 
 So it's pretty clear that the model recognises that people are more likely to lift lighter loads than heavier loads, and that people with a greater strength ability are also more likely to lift a given load. We do have some loads though that are just incredibly easy such that pretty much anyone can lift them, and conversely so incredible difficult that no one can lift them.
@@ -266,153 +156,17 @@ After we fit the 1PL model we we can then extract the random effects by person a
 
 So we fit a simple linear model to estimate 1RM from $\theta_{j}$:
 
-```{r, echo=FALSE, message=FALSE, results='hide'}
-rand <- ranef(fit_1pl)
-                
-rand_person <- data.frame(person = row.names(rand$person), rand$person)
-
-rand_item <- as.data.frame(rand$item)
-rand_item <- data.frame(beta = rep(rand_item$Estimate.Intercept, times = 100)) %>%
-  mutate(item = as.factor(rep(1:20, times=100)*10),
-         person = rep(rand_person$person, each=20)) %>%
-  select(person, item, beta)
-
-rand_all <- left_join(rand_person, rand_item, by = "person") %>%
-  rename(
-         theta = "Estimate.Intercept") %>%
-  mutate(beta = beta*-1)
-  
-comb_effort <- left_join(rand_all, oneRM_dat, by = c("person", "item")) 
-
-scores_oneRM <- comb_effort %>%
-  group_by(person) %>%
-  filter(row_number()==1)
-
-lm_1RM <- brm(one_RM ~ theta,
-   data = scores_oneRM,
-            seed = 1988)
-
-```
-
-```{r}
-lm_1RM
-```
-
-And also to estimate load from $\beta_{i}$:
-
-```{r, echo=FALSE, message=FALSE, results='hide'}
-loads <- comb_effort %>%
-  group_by(item) %>%
-  filter(row_number()==1) %>%
-  mutate(load = as.numeric(item)*10)
-
-lm_loads <- brm(load ~ beta,
-            data = loads,
-            seed = 1988)
-```
-
-```{r}
-lm_loads
-```
-
-And visually the fit looks like this:
-
-```{r, echo=FALSE, message=FALSE}
-library(ggpubr)
-library(tidybayes)
-library(modelr)
-
-theta_oneRM <- scores_oneRM %>%
-  group_by(person) %>%
-  filter(row_number()==1) %>%
-  data_grid(theta = seq_range(theta, 100)) %>%
-  add_epred_draws(lm_1RM) %>%
-  ggplot(aes(x = theta, y = one_RM)) +
-  stat_lineribbon(aes(y = .epred), size = 1, fill = "grey") +
-  geom_point(data = scores_oneRM, size = 1, alpha = 0.8) +
-  labs(title = "1RM (kg) and Ability",
-       y = "1RM (kg)",
-       x = expression(theta~('ability on the logit scale'))) +
-  theme_classic()
-
-beta_load <- loads %>%
-  data_grid(beta = seq_range(beta, 100)) %>%
-  add_epred_draws(lm_loads) %>%
-  ggplot(aes(x = beta, y = as.numeric(item)*10)) +
-  stat_lineribbon(aes(y = .epred), size = 1, fill = "grey") +
-  geom_point(data = loads, size = 1, alpha = 0.8) +
-  labs(title = "Load (kg) and Item Difficulty",
-       y = "Load (kg)",
-       x = expression(beta~('difficulty on the logit scale'))) +
-  theme_classic()
-
-theta_oneRM + beta_load
-```
-
-So, we can now use the intercepts and coefficients from these models to linearly transform $\theta_{j}$ and $\beta_{i}$ back to the raw kg units $\theta_{j(transf)}$ and $\beta_{i(transf)}$. Then we can use them to calculate our IRT model estimate of actual effort as:
-
-  $$\beta_{i(transf)} \leq \theta_{j(transf)} \Rightarrow E_{A(ji,IRT)} = \frac{ 
-    \beta_{i(transf)}}
-{\theta_{j(transf)}} \times 100%$$
-  
-  $$\beta_{i(transf)} > \theta_{j(transf)} \Rightarrow E_{A,(ji,IRT)} = 100%$$
-
-Now we have two sets of actual effort in our dataset; we have the original actual effort calculated directly from the 1RM and loads ($E_{A(ji)}$) and also and effort calculated from our transformed estimates of ability and difficulty ($E_{A(ji,IRT)}$).
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-
-comb_effort <- comb_effort %>%
-  mutate(theta_to_raw = fixef(lm_1RM)[1,1] + (fixef(lm_1RM)[2,1]*theta),
-         beta_to_raw = fixef(lm_loads)[1,1] + (fixef(lm_loads)[2,1]*beta),
-         irt_effort = if_else(theta_to_raw >= beta_to_raw, beta_to_raw/theta_to_raw*100, 100))
-
-comb_effort %>%
-  select(person, one_RM, item, actual_effort, theta, beta, theta_to_raw, beta_to_raw, irt_effort) %>%
-  slice(1:10)
-```
-
-Now, because we have multiple observations for each individuals we can fit a mixed effects model with random intercepts and slopes to explore how well the $E_{A(ji,IRT)}$ estimates $E_{A(ji)}$.
-
-```{r, echo=FALSE, message=FALSE, results='hide', warning=FALSE}
-
-lmm_effort <- brm(actual_effort ~ irt_effort + (irt_effort | person),
-                    data = comb_effort,
-                  seed = 1988)
-
-comb_effort_p <- comb_effort %>%
-  data_grid(irt_effort = seq(from = 0, to = 100, by = 1), person) %>%
-  add_epred_draws(lmm_effort) %>%
-  ggplot(aes(x = irt_effort, y = actual_effort)) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  stat_lineribbon(aes(y = .epred), size = 1, fill = "grey") +
-  geom_point(data = comb_effort, aes(x = irt_effort, y = actual_effort), alpha = 0.5, size = 0.75) +
-  scale_y_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
-  scale_x_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
-  labs(title = "Calculated Actual Effort and IRT (1PL) Estimated Actual Effort",
-       x = expression("E"[A(ji,transf)]~"(Actual effort estimated from IRT model; %)"),
-       y = expression("E"[A(ji)]~"(Actual effort calculated directly; %)")) +
-  theme_classic()
 
 
-comb_effort_p
-
-```
-
-This doesn't look too bad to be fair. In fact, it's pretty darn good in my opinion. The overall fixed effect estimate is almost perfectly on the identity which would leave me feeling fairly confident in using $E_{A(ji,IRT)}$ as my operatational estimate $E_{A(ji)}$.
-
-### _Summary and Conclusion_
-Key assumptions underlying IRT models and their parameters, _ability_ and _difficulty_, map conceptually well onto the assumed primitives, _capacity_ and _demands_, in my definition of effort. Given this, IRT models seem like a useful approach to operationalisation of _actual effort_ in cognitive tasks. In fact, using the example of a test involving lifting weights where we actually know a persons underlying ability/capacity and the difficulty/demands of each item in the test, the estimates of effort that result from an IRT model are pretty reasonable estimates of the actual effort we could calculate from direct measurements.
-
-I think this approach offers an interesting opportunity to look at actual effort in cognitive tasks. This could be particularly useful in exploring psychophysics in such tasks where we also capture self-reports of perception of effort during each item.
-
-Further, I do not think that such models are limited to only cognitive tasks. As I have shown here, we can apply IRT models to tasks we wouldn't typically think to. Many people have been thwarted in attempts to conceptualise effort in target based tasks such as dart throwing. However, I think that the use of IRT models could also allow the estimation of actual effort for these tasks. 
 
 
-[^1]: Markus, K. A. (2008). Constructs, concepts and the worlds of possibility: Connecting the measurement, manipulation, and meaning of variables. Measurement: Interdisciplinary Research and Perspectives, 6(1-2), 54–77. https://doi.org/10.1080/15366360802035513
-[^2]: I'll use$j$ here to denote the individual instead of$i$ as I do in the original paper, to be in keeping with the typical notation used in Item Response Theory models that follows because $i$ is used for the 'item'. 
-[^3]: To be fair, the [Wikipedia page](https://en.wikipedia.org/wiki/Item_response_theory) on IRT provides a pretty good overview as expected. But I do like Fundamentals of Item Response Theory by R. K. Hambleton, H. Swaminathan, and H. J. Rogers as a strong intro text that's pretty short (only ~150 pages exlcuding appendices etc.)
-[^4]:  Note, for my purposes here I am going with the 'difficulty', but if we wanted 'easiness' we would use $\alpha_{i}\theta_{j}+\beta_{i}$.
-[^5]: For those unfamiliar, in practice this is normally achieved within 3-5 attempts so as to not allow cumulative fatigue to unduly influence the estimate of maximum strength. 
-[^6]: I used Lisa DeBruine's great package {faux} for this, which I tend to use for a lot of simulation as it's so intuitive. Check it out [here](https://debruine.github.io/faux/).
-[^7]: I've deliberately chose someone with a 1RM < 100 kg so it's clear that the response is dependent on the relationship between that and the load lifted.
-[^8]: But, take a look at at the great papers by by Paul Bürkner [here](https://arxiv.org/abs/1905.09501) and [here](https://www.mdpi.com/2079-3200/8/1/5/htm) who authored the {brms} package - see [here](https://www.jstatsoft.org/article/view/v080i01).
+
+
+
+
+
+
+
+
+
+
