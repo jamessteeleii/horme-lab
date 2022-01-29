@@ -3,7 +3,7 @@ title: "Actual Effort in Cognitive Tasks"
 subtitle: Can Item Response Theory help with operationalisation?
 date: '2022-01-24T16:06:15Z'
 output:
-  html_document: default
+  html_document: 
     df_print: paged
   pdf_document: 
 tags: []
