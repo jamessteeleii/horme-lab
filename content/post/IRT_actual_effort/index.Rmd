@@ -368,24 +368,32 @@ comb_effort %>%
   slice(1:10)
 ```
 
-Now, because we have multiple observations for each individuals we can fit a mixed effects model with random intercepts and slopes to explore how well the $E_{A(ji,IRT)}$ estimates $E_{A(ji)}$.
+Now, because we have multiple observations for each individuals we can fit a mixed effects model with random intercepts and slopes to explore how well the $E_{A(ji,IRT)}$ estimates $E_{A(ji)}$. Given the conceptualisation of effort as being a bounded construct on the 0% to 100% interval we should use a model taking that into account and so we fit an ordered beta regression model[^10].
 
 ```{r, echo=FALSE, message=FALSE, results='hide', warning=FALSE}
 
-lmm_effort <- brm(actual_effort ~ irt_effort + (irt_effort | person),
-                    data = comb_effort,
-                  seed = 1988)
+comb_effort <- comb_effort %>%
+  mutate(actual_effort = actual_effort/100,
+         irt_effort = irt_effort/100)
 
+ordbeta_effort <- ordbetareg::ordbetareg(actual_effort ~ irt_effort + (irt_effort | person),
+                                     data = comb_effort
+                                     )
+
+                
 comb_effort_p <- comb_effort %>%
-  data_grid(irt_effort = seq(from = 0, to = 100, by = 1), person) %>%
-  add_epred_draws(lmm_effort) %>%
-  ggplot(aes(x = irt_effort, y = actual_effort)) +
+  # data_grid(irt_effort = seq(from = 0, to = 1, length = 101), person) %>%
+  tidyr::expand(nesting(person),
+                irt_effort = seq(from = 0, to = 100, length = 101)) %>%
+  add_epred_draws(ordbeta_effort) %>%
+  ggplot(aes(x = irt_effort*100, y = actual_effort*100)) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  stat_lineribbon(aes(y = .epred), size = 1, fill = "grey") +
-  geom_point(data = comb_effort, aes(x = irt_effort, y = actual_effort), alpha = 0.5, size = 0.75) +
+  geom_point(data = comb_effort, aes(x = irt_effort*100, y = actual_effort*100), alpha = 0.5, size = 0.75) +
+  stat_lineribbon(aes(y = .epred*100), alpha = 0.8, .width = 0.95, fill = "grey") +
   scale_y_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
   scale_x_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
   labs(title = "Calculated Actual Effort and IRT (1PL) Estimated Actual Effort",
+              subtitle = "Mixed Effects Ordered Beta Regression",
        x = expression("E"[A(ji,IRT)]~"(Actual effort estimated from IRT model; %)"),
        y = expression("E"[A(ji)]~"(Actual effort calculated directly; %)")) +
   theme_classic()
@@ -395,7 +403,7 @@ comb_effort_p
 
 ```
 
-This doesn't look too bad to be fair. In fact, it's pretty darn good in my opinion. The overall fixed effect estimate is almost perfectly on the identity which would leave me feeling fairly confident in using $E_{A(ji,IRT)}$ as my operatational estimate $E_{A(ji)}$.
+This doesn't look too bad to be fair. In fact, while it slightly underestimates at the lower bounds, it's pretty darn good in my opinion and leaves me feeling fairly confident in using $E_{A(ji,IRT)}$ as my operationalisation for $E_{A(ji)}$.
 
 ### _Summary and Conclusion_
 Key assumptions underlying IRT models and their parameters, _ability_ and _difficulty_, map conceptually well onto the assumed primitives, _capacity_ and _demands_, in my definition of effort. Given this, IRT models seem like a useful approach to operationalisation of _actual effort_ in cognitive tasks. In fact, using the example of a test involving lifting weights where we actually know a persons underlying ability/capacity and the difficulty/demands of each item in the test, the estimates of effort that result from an IRT model are pretty reasonable estimates of the actual effort we could calculate from direct measurements.
@@ -414,3 +422,4 @@ Further, I do not think that such models are limited to only cognitive tasks. As
 [^7]: I've deliberately chose someone with a 1RM < 100 kg so it's clear that the response is dependent on the relationship between that and the load lifted.
 [^8]: But, take a look at at the great papers by by Paul Bürkner [here](https://arxiv.org/abs/1905.09501) and [here](https://www.mdpi.com/2079-3200/8/1/5/htm) who authored the {brms} package - see [here](https://www.jstatsoft.org/article/view/v080i01).
 [^9]: Credit to Solomon Kurz for his great [post](https://solomonkurz.netlify.app/post/2021-06-29-make-icc-plots-for-your-brms-irt-models/) on wrangling {brms} models to create these ICC plots.
+[^10]: Nice paper on this recently developed approach to handling bounded variables, along with the {ordbetareg} package that overlays {brms}, from Robert Kubinec [here](https://osf.io/preprints/socarxiv/2sx6y/) 
