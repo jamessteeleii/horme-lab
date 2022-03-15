@@ -2,10 +2,7 @@
 title: "Actual Effort in Cognitive Tasks"
 subtitle: Can Item Response Theory help with operationalisation?
 date: '2022-01-29T16:06:15Z'
-output:
-  html_document: 
-    df_print: paged
-  pdf_document: 
+output: md_document
 tags: []
 categories: []
 summary: Item Response Theory assumes latent abilities, and varying difficulties for
@@ -372,35 +369,35 @@ Now, because we have multiple observations for each individuals we can fit a mix
 
 ```{r, echo=FALSE, message=FALSE, results='hide', warning=FALSE}
 
-comb_effort <- comb_effort %>%
-  mutate(actual_effort = actual_effort/100,
-         irt_effort = irt_effort/100) %>%
-  add_row(actual_effort = 0)
-
-ordbeta_effort <- ordbetareg::ordbetareg(actual_effort ~ irt_effort + (irt_effort | person),
-                                     data = comb_effort
-                                     )
-
-                
-comb_effort_p <- comb_effort %>%
-  # data_grid(irt_effort = seq(from = 0, to = 1, length = 101), person) %>%
-  tidyr::expand(nesting(person),
-                irt_effort = seq(from = 0, to = 100, length = 101)) %>%
-  add_epred_draws(ordbeta_effort) %>%
-  ggplot(aes(x = irt_effort*100, y = actual_effort*100)) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  geom_point(data = comb_effort, aes(x = irt_effort*100, y = actual_effort*100), alpha = 0.5, size = 0.75) +
-  stat_lineribbon(aes(y = .epred*100), alpha = 0.8, .width = 0.95, fill = "grey") +
-  scale_y_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
-  scale_x_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
-  labs(title = "Calculated Actual Effort and IRT (1PL) Estimated Actual Effort",
-              subtitle = "Mixed Effects Ordered Beta Regression",
-       x = expression("E"[A(ji,IRT)]~"(Actual effort estimated from IRT model; %)"),
-       y = expression("E"[A(ji)]~"(Actual effort calculated directly; %)")) +
-  theme_classic()
-
-
-comb_effort_p
+# comb_effort <- comb_effort %>%
+#   mutate(actual_effort = actual_effort/100,
+#          irt_effort = irt_effort/100) %>%
+#   add_row(actual_effort = 0)
+# 
+# ordbeta_effort <- ordbetareg::ordbetareg(actual_effort ~ irt_effort + (irt_effort | person),
+#                                      data = comb_effort
+#                                      )
+# 
+#                 
+# comb_effort_p <- comb_effort %>%
+#   # data_grid(irt_effort = seq(from = 0, to = 1, length = 101), person) %>%
+#   tidyr::expand(nesting(person),
+#                 irt_effort = seq(from = 0, to = 100, length = 101)) %>%
+#   add_epred_draws(ordbeta_effort) %>%
+#   ggplot(aes(x = irt_effort*100, y = actual_effort*100)) +
+#   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+#   geom_point(data = comb_effort, aes(x = irt_effort*100, y = actual_effort*100), alpha = 0.5, size = 0.75) +
+#   stat_lineribbon(aes(y = .epred*100), alpha = 0.8, .width = 0.95, fill = "grey") +
+#   scale_y_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
+#   scale_x_continuous(limits = c(0,101), breaks = c(0,25,50,75,100)) +
+#   labs(title = "Calculated Actual Effort and IRT (1PL) Estimated Actual Effort",
+#               subtitle = "Mixed Effects Ordered Beta Regression",
+#        x = expression("E"[A(ji,IRT)]~"(Actual effort estimated from IRT model; %)"),
+#        y = expression("E"[A(ji)]~"(Actual effort calculated directly; %)")) +
+#   theme_classic()
+# 
+# 
+# comb_effort_p
 
 ```
 
