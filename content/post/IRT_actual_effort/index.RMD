@@ -374,7 +374,8 @@ Now, because we have multiple observations for each individuals we can fit a mix
 
 comb_effort <- comb_effort %>%
   mutate(actual_effort = actual_effort/100,
-         irt_effort = irt_effort/100)
+         irt_effort = irt_effort/100) %>%
+  add_row(actual_effort = 0)
 
 ordbeta_effort <- ordbetareg::ordbetareg(actual_effort ~ irt_effort + (irt_effort | person),
                                      data = comb_effort

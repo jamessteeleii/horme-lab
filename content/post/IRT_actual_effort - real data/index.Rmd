@@ -39,10 +39,10 @@ But here's a very quick TLDR recap of the thinking from it's conclusion:
 
 In the post, I used the analogy of testing the ability of 'strength' through lifting different loads and fit a 1-parameter logistic (1PL, or Rasch model) to some simulated data representing people with varying strength levels lifting different loads successfully or not depending on this. This toy example demonstrated quite nicely (if I do say so myself) that in principle we can use IRT models to estimate the actual effort required for a given person performing a given task/item. As a result, I think it could be a promising approach to exploring effort psychophysics in cognitive tasks i.e., the relationship between actual effort, and perception of effort.
 
-But how does it work out when we introduce it to some real data? I got hold of some datasets where I was able to fit IRT models to the cognitive tasks performed, and where they had also captured some operationalisation of perception of effort.
+But how does it work out when we introduce it to some real data? I got hold of a dataset where I was able to fit IRT models to the cognitive tasks performed, and where they had also captured some operationalisation of perception of effort.
 
 ### _Measurement scale issues_
-Before I get to the actual datasets, we first need to talk about the issues with IRT models for my ideas about estimating effort as:
+Before I get to the actual dataset, we first need to talk about the issues with IRT models for my ideas about estimating effort as:
 
   $$\theta_{j}=C_{A(j)}$$
   $$\beta_{i}=D_{A(i)}$$
@@ -80,9 +80,9 @@ Working with the assumption as I do that...
 
   >"...the perception of effort appears at best a coarsegrained representation of actual effort which is probably a result of the introduction of ‘noise’ into the signal from both the sensory systems, and the perceptual system. As such, although the directional patterns of perception of effort often follow those we would expect based upon actual effort, they are ‘fuzzy’ and inaccurate representations of reality."[^2]
 
-We'd expect to at the very least see this directional relationships between our IRT operationalisation of actual (objective) effort (i.e., $E_{A(ji,IRT)}$) and operationalisations of perception of (subjective) effort, or subjective effort.
+We'd expect to at the very least see positive directional relationships between our IRT operationalisation of actual (objective) effort (i.e., $E_{A(ji,IRT)}$) and operationalisations of perception of (subjective) effort, or subjective effort.
 
-So let's take a look at a couple of datasets.
+So let's take a look at an example dataset.
 
 ### _N-Back tasks, NASA-TLX, and Effort Discounting_
 
@@ -94,7 +94,7 @@ Andrew Westbrook was kind enough to share with me all the data from his 2013 Plo
 
 </center>
 
-In this study both young and old adults performed the N-Back task[^3] over varying difficulty levels (1-6-Back). They also captured two different operationalisations related to the subjective nature of effort. Firstly, they captured the NASA Task Load Index (NASA-TLX)[^4] which here I assume is an operationalisation of the perception of effort i.e., the phenomenological experience. Secondly, they also determined the subjective value/cost of effort using a cognitive effort discounting paradigm[^5] which I'm not sure is wholly reflective of the perception of effort _per se_[^6] but is interesting to explore nonetheless. So in all we have a cognitive task (N-Back) which we can apply an IRT model to in order to operationalise the actual (objective) effort, and a couple of different operationalisation of the perception of (subjective) effort. 
+In this study both young and old adults performed the N-Back task[^3] over varying difficulty levels (1-6-Back). They also captured two different operationalisations _related_ to the subjective nature of effort. Firstly, they captured the NASA Task Load Index (NASA-TLX)[^4] which here I assume is an operationalisation of the perception of effort i.e., the phenomenological experience. Secondly, they also determined the subjective value/cost of effort using a cognitive effort discounting paradigm[^5] which I'm not sure is wholly reflective of the perception of effort _per se_[^6] but is interesting to explore nonetheless. So in all we have a cognitive task (N-Back) which we can apply an IRT model to in order to operationalise the actual (objective) effort, and a couple of different operationalisation of the perception of (subjective) effort. 
 
 So firstly let's fit the 1PL model to the N-Back data treating each level (1-6) as an item. Here's the Item Characteristic Curves across the items:
 
@@ -200,11 +200,7 @@ Nice. The 1PL model shows what we would expect from increasing N-Back: that the 
 
 From this we can pull out the random effects for person and item, $\theta_{j}$ and $\beta_{i}$, and then we can exponentiate them to put them back on the odds scale to calculate $E_{A(ji,IRT)}$. Then we rejoin it with the effort scale from the NASA-TLX, and the subjective cost of effort determined from the effort discounting paradigm, and can begin to model the relationship between $E_{A(ji,IRT)}$ and both these operationlisations of perception of (subjective) effort.
 
-
-##### - Update NASA model to use ordered beta regression. Cumuliative ordinal regression on probit assumes underlying     unbounded normal distributions, but the underlygin latent variable of perception of effort is conceptually bounded for us.
-
-##### - So instead we use Kubinec's new package that overlays brms - https://cran.r-project.org/web/packages/ordbetareg/vignettes/package_introduction.html 
-
+First we will look at the NASA-TLX data. Now, the NASA-TLX is an ordinal scale and so we might consider using cummulative ordinal regression on the probit scale. But this model assumes that the data arises from unbounded normal distributions where our underlying latent variable of perception of effort is conceptually bounded. So we should use a model to reflect that such as ordered beta regression[^7]. Similarly to the previous post we fit a mixed effects model with random intercepts and slopes to explore how well $E_{A(ji,IRT)}$ is related to the Effort scale of the NASA-TLX.
 
 
 ```{r, echo=FALSE, message=FALSE}
@@ -234,8 +230,16 @@ comb_effort <- left_join(comb_effort, SV_dat, by = c("person", "item"))
 
 # NASA_effort ~ IRT Effort
 
+comb_effort <- comb_effort %>% # add upper and lower bounds manually so that data is normalised to them for ordbetareg
+  add_row(Effort = 0) %>%
+  add_row(Effort = 21)
+
 ordbeta_NASA_effort <- ordbetareg(formula = Effort ~ irt_effort + (irt_effort | person),
-                                  data = comb_effort)
+                                  data = comb_effort,
+                                  chains = 4,
+                    iter = 3000, warmup = 1000,
+                    cores = 4,
+                    control = list(adapt_delta = 0.95), inits = 0)
 
 ordbeta_NASA_effort_p <- comb_effort %>%
   filter(Effort > 0) %>%
@@ -264,20 +268,16 @@ ordbeta_NASA_effort_p
 ```{r, echo=FALSE, message=FALSE}
 # SV ~ IRT Effort
 comb_effort_SV <- comb_effort %>%
-  filter(!is.na(SV))
-
-
-brm_SV_effort <- brm(SV_effort ~ irt_effort + (irt_effort | person),
-                    data = comb_effort_SV,
-                    family = brmsfamily("zero_one_inflated_beta", link = "logit"),
-                    chains = 4,
-                    iter = 3000, warmup = 1000,
-                    cores = 4,
-                    control = list(adapt_delta = 0.95), inits = 0
-                    )
+  filter(!is.na(SV)) %>%
+  add_row(SV_effort = 0) %>%
+  add_row(SV_effort = 1)
 
 ordbeta_SV_effort <- ordbetareg(formula = SV_effort ~ irt_effort + (irt_effort | person),
-                                  data = comb_effort_SV)
+                                  data = comb_effort,
+                                  chains = 4,
+                    iter = 3000, warmup = 1000,
+                    cores = 4,
+                    control = list(adapt_delta = 0.95), inits = 0)
 
 ordbeta_SV_effort_p <- comb_effort_SV %>%
   filter(SV_effort > 0) %>%
@@ -301,140 +301,6 @@ SV_effort_p
 
 ```
 
-```{r,echo=FALSE,}
-# 
-#               # Person ability and AUC
-#               comb_AUC <- left_join(rand_person, AUC_dat, by = "person")
-# 
-#               theta_AUC_plot <- comb_AUC %>%
-#                 ggplot(aes(x=Estimate.Intercept, y=AUC)) +
-#                 geom_hline(yintercept = 0, linetype = "dashed") +
-#                 geom_vline(xintercept = 0, linetype = "dashed") +
-#                 geom_point(alpha = 0.5) +
-#                 geom_smooth(method = "lm", color = "Black") +
-#                 # stat_regline_equation(label.x=-0.5, label.y=-Inf, vjust=-5, size=3) +
-#                 labs(title = expression("Person Ability ("~theta~") and Effort Discounting AUC"),
-#                      x = expression(theta~('ability on the logit scale estimated from perception of capacity')),
-#                      y = "Effort Discounting AUC") +
-#                 theme_classic()
-# 
-# 
-#               (icc_p + theta_AUC_plot) / (NASA_effort_p + SV_effort_p)
-
-```
-
-Fleming et al. data
-
-```{r, echo=FALSE, message=FALSE}
-
-# setwd("C:/Users/James/Dropbox/Research/Understanding Effort - and other perceptual phenomena/Horme Lab/Website/horme-lab/content/post/IRT_actual_effort - real data/datasets/Fleming et al., 2022")
-# 
-# fleming_dat <- read.csv("Fleming et al data for IRT.csv") 
-# 
-# fleming_dat <- rename(fleming_dat, person = subnum, item = nswitch)
-# 
-# fleming_dat <- fleming_dat %>%
-#   mutate(person = as.factor(person),
-#          item = as.factor(item)) %>%
-#   group_by(person) %>%
-#   mutate(avg_accuracy_person = mean(accuracy)) %>%
-#   ungroup() %>%
-#   group_by(person, item) %>%
-#   mutate(avg_accuracy_item = mean(accuracy))
-# 
-# 
-# 
-# ## 1PL model
-# 
-# formula_1pl <- bf(
-#   formula = response ~ 1 + (1 | item) + (1 | person),
-#   family = brmsfamily("bernoulli", link = "logit")
-# )
-# 
-# prior_1pl <- 
-#   prior("normal(0, 2)", class = "Intercept") +
-#   prior("normal(0, 3)", class = "sd", group = "person") + 
-#   prior("normal(0, 3)", class = "sd", group = "item")
-# 
-# fit_1pl <- brm(
-#   formula = formula_1pl,
-#   data = fleming_dat,
-#   prior = prior_1pl,
-#   chains = 4, 
-#   iter = 3000, warmup = 1000,
-#   cores = 4, 
-#   control = list(adapt_delta = 0.95), inits = 0
-# )
-# 
-# post <- posterior_samples(fit_1pl)
-# 
-# post <- post %>% 
-#   select(b_Intercept, starts_with("r_item")) %>% 
-#   mutate(iter = 1:n()) %>% 
-#   pivot_longer(starts_with("r_item"), names_to = "item", values_to = "xi") %>% 
-#   mutate(item = str_extract(item, "\\d+")) 
-# 
-# post_icc <- post %>% 
-#   tidyr::expand(nesting(iter, b_Intercept, item, xi),
-#                 theta = seq(from = -6, to = 6, length.out = 100)) %>% 
-#   mutate(p = inv_logit_scaled(b_Intercept + theta - xi)) %>% 
-#   group_by(theta, item) %>% 
-#   summarise(p = mean(p)) 
-# 
-# icc_p <- post_icc %>% 
-#   ggplot(aes(x = theta, y = p, color = item)) +
-#   geom_line() +
-#   scale_color_viridis_d(option = "H") +
-#   labs(title = "ICCs for the 1PL",
-#        subtitle = "Each curve is based on the posterior mean.", 
-#        x = expression(theta~('ability on the logit scale')),
-#        y = expression(italic(p)(y==1)),
-#        color = "Item (no. switches)") +
-#   theme_classic() +
-#   theme(legend.text = element_text(size = 8),
-#         legend.title = element_text(size=10))
-# 
-# rand <- ranef(fit_1pl)
-# 
-# rand_person <- data.frame(person = row.names(rand$person), rand$person)
-# 
-# rand_item <- as.data.frame(rand$item)
-# rand_item <- data.frame(beta = rep(rand_item$Estimate.Intercept, times = length(unique(fleming_dat$person)))) %>%
-#   mutate(item = as.factor(rep(1:length(unique(fleming_dat$item)), times=length(unique(fleming_dat$person)))),
-#          person = rep(rand_person$person, each=length(unique(fleming_dat$item)))) %>%
-#   select(person, item, beta)
-# 
-# rand_all <- left_join(rand_person, rand_item, by = "person") %>%
-#   rename(
-#     theta = "Estimate.Intercept") %>%
-#   mutate(beta = beta*-1,
-#          irt_effort = if_else(exp(beta) > exp(theta), 1, (exp(beta)/exp(theta)))
-#   )
-# 
-# comb_effort <- left_join(rand_all, fleming_dat, by = c("person", "item")) 
-# 
-# lmer_effort <- lmer(Effort ~ irt_effort + (irt_effort | person),
-#                     data = comb_effort)
-# 
-# lmer_effort_pred <- ggeffects::ggpredict(lmer_effort, terms =  "irt_effort")
-# 
-# comb_effort_p <- comb_effort %>%
-#   ggplot() +
-#   geom_abline(intercept = 0, slope = 0.2, linetype = "dashed") +
-#   # geom_point(aes(x = irt_effort*100, y = Effort), alpha = 0.5, size = 0.75) +
-#   geom_smooth(aes(x = irt_effort*100, y = Effort, group=person), method="lm", alpha = 0.25, size = 0.05, color = "black", se = FALSE) +
-#   geom_ribbon(data = lmer_effort_pred, aes(x=x*100, ymin=conf.low, ymax=conf.high), fill = "grey", alpha = 0.75) +
-#   geom_line(data = lmer_effort_pred, aes(x=x*100, y=predicted), color = "black") +
-#   scale_y_continuous(limits = c(0,20)) +
-#   scale_x_continuous(limits = c(0,100)) +
-#   labs(title = "IRT (1PL) Estimated Effort and NASA-TLX Effort",
-#        y = "NASA-TLX Effort (0-10)",
-#        x = expression("IRT Estimated Effort = exp("~beta~")/exp("~theta~")")) +
-#   theme_classic()
-# 
-# comb_effort_p
-
-```
 
 [^1]: See this nice thesis by Rebecca Freund [_Rasch and Rationality: Scale typologies as applied to Item Response Theory_](https://escholarship.org/uc/item/1vh141kq)
 [^2]: [What is (perception of) effort? Objective and subjective effort during attempted task performance](https://www.hormelab.com/what_is_effort/)
@@ -442,5 +308,5 @@ Fleming et al. data
 [^4]: The [NASA-TLX](https://humansystems.arc.nasa.gov/groups/tlx/downloads/TLXScale.pdf) is a six item state questionnaire, one of which asks about the effort required i.e., "How hard did you have to work to accomplish your level of performance?". It's not ideal in my opinion given my conceptual definition of perception of effort, but it'll do for current purposes.
 [^5]: Westbrook et al. describe it as follows: _"The key feature of this paradigm is that participants choose whether to perform a low-effort task for a small monetary reward or a high-effort task for a larger reward (Figure 1). Multiple choices are made, and the amount offered for the low-effort task is titrated until subjective equivalence is reached (the offers are equally preferred). The additional amount required to make the high- and low-effort task equivalent quantifies the cost of cognitive effort, or the degree to which increased cognitive effort diminishes the value of task engagement. The objective load of the high-effort task can also be varied parametrically. As such, the procedure is formally analogous to the estimation of discounting across a range of delays in delay discounting. Unlike discounting procedures involving hypothetical costs or rewards, participants make choices about tasks that they are actually paid for re-doing, promoting test validity."_
 [^6]: It is often assumed that effort is inherently aversive and so the valuation of effort says something about the subjective experience of it. But as Inzlicht et al. have [suggested](https://pubmed.ncbi.nlm.nih.gov/29477776/) effort can be both costly and valued. In fact, some people often seek out effortful experiences. For example, I like to engage in resistance training, and when I do so I deliberately aim to do so with maximum effort (i.e., to task failure). In such a situation the subjective valuation of the effort experienced would not necessarily follow the direction which would be assumed if it were inherently aversive. 
-
+[^7]: As with the previous post I use the {ordbetareg} package that overlays {brms}, from Robert Kubinec [see here](https://osf.io/preprints/socarxiv/2sx6y/) and which does the job of normalising the variable to the [0,1] interval to fit the ordered beta regression model. 
 
