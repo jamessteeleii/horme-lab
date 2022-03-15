@@ -1,7 +1,7 @@
 ---
 title: "Actual Effort in Cognitive Tasks (pt 2)"
 subtitle: Some examples using Item Response Theory with real data
-date: '2022-01-29T16:06:15Z'
+date: '2022-03-15T16:06:15Z'
 output:
   html_document: 
     df_print: paged
@@ -9,7 +9,7 @@ output:
 tags: []
 categories: []
 summary: In this post I get hold of some real data to test out my idea of using Item Response Theory for operationalising actual effort
-lastmod: '2022-01-29T16:06:15Z'
+lastmod: '2022-03-15T16:06:15Z'
 featured: no
 draft: no
 image:
@@ -205,99 +205,99 @@ First we will look at the NASA-TLX data. Now, the NASA-TLX is an ordinal scale a
 
 ```{r, echo=FALSE, message=FALSE}
 
-# Pull ranef for person and item to calculate IRT efforts
-rand <- ranef(fit_1pl)
-
-rand_person <- data.frame(person = row.names(rand$person), rand$person)
-
-rand_item <- as.data.frame(rand$item)
-rand_item <- data.frame(beta = rep(rand_item$Estimate.Intercept, times = length(unique(nback_dat$person)))) %>%
-  mutate(item = as.factor(rep(1:length(unique(nback_dat$item)), times=length(unique(nback_dat$person)))),
-         person = rep(rand_person$person, each=length(unique(nback_dat$item)))) %>%
-  select(person, item, beta)
-
-rand_all <- left_join(rand_person, rand_item, by = "person") %>%
-  rename(
-    theta = "Estimate.Intercept") %>%
-  mutate(beta = beta*-1,
-         irt_effort = if_else(exp(beta) > exp(theta), 1, (exp(beta)/exp(theta)))
-  )
-
-# recombine with NASA, SV
-comb_effort <- left_join(rand_all, NASA_dat, by = c("person", "item"))
-comb_effort <- left_join(comb_effort, SV_dat, by = c("person", "item"))
-
-
-# NASA_effort ~ IRT Effort
-
-comb_effort <- comb_effort %>% # add upper and lower bounds manually so that data is normalised to them for ordbetareg
-  add_row(Effort = 0) %>%
-  add_row(Effort = 21)
-
-ordbeta_NASA_effort <- ordbetareg(formula = Effort ~ irt_effort + (irt_effort | person),
-                                  data = comb_effort,
-                                  chains = 4,
-                    iter = 3000, warmup = 1000,
-                    cores = 4,
-                    control = list(adapt_delta = 0.95), inits = 0)
-
-ordbeta_NASA_effort_p <- comb_effort %>%
-  filter(Effort > 0) %>%
-  # data_grid(irt_effort = seq(from = 0, to = 1, length = 101), person) %>%
-  tidyr::expand(nesting(person),
-                irt_effort = seq(from = 0, to = 1, length = 101)) %>%
-  add_epred_draws(ordbeta_NASA_effort) %>%
-  ggplot(aes(x = irt_effort*100, y = .epred*100)) +
-  stat_lineribbon(aes(y = .epred*100, fill_ramp = stat(.width)), alpha = 0.8, .width = ppoints(50), fill = "grey") +
-  ggdist::scale_fill_ramp_continuous(range = c(1, 0)) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  scale_y_continuous(limits = c(0,100)) +
-  scale_x_continuous(limits = c(0,100)) +
-  labs(title = "IRT (1PL) Estimated Effort and NASA-TLX Effort",
-       subtitle = "Mixed Effects Ordered Beta Regression",
-       y = "NASA-TLX Effort (Ordered Beta Transformation; %)",
-       x = expression("IRT Estimated Effort = exp("~beta~")/exp("~theta~")")) +
-  theme_classic()
-
-ordbeta_NASA_effort_p
+# # Pull ranef for person and item to calculate IRT efforts
+# rand <- ranef(fit_1pl)
+# 
+# rand_person <- data.frame(person = row.names(rand$person), rand$person)
+# 
+# rand_item <- as.data.frame(rand$item)
+# rand_item <- data.frame(beta = rep(rand_item$Estimate.Intercept, times = length(unique(nback_dat$person)))) %>%
+#   mutate(item = as.factor(rep(1:length(unique(nback_dat$item)), times=length(unique(nback_dat$person)))),
+#          person = rep(rand_person$person, each=length(unique(nback_dat$item)))) %>%
+#   select(person, item, beta)
+# 
+# rand_all <- left_join(rand_person, rand_item, by = "person") %>%
+#   rename(
+#     theta = "Estimate.Intercept") %>%
+#   mutate(beta = beta*-1,
+#          irt_effort = if_else(exp(beta) > exp(theta), 1, (exp(beta)/exp(theta)))
+#   )
+# 
+# # recombine with NASA, SV
+# comb_effort <- left_join(rand_all, NASA_dat, by = c("person", "item"))
+# comb_effort <- left_join(comb_effort, SV_dat, by = c("person", "item"))
+# 
+# 
+# # NASA_effort ~ IRT Effort
+# 
+# comb_effort <- comb_effort %>% # add upper and lower bounds manually so that data is normalised to them for ordbetareg
+#   add_row(Effort = 0) %>%
+#   add_row(Effort = 21)
+# 
+# ordbeta_NASA_effort <- ordbetareg(formula = Effort ~ irt_effort + (irt_effort | person),
+#                                   data = comb_effort,
+#                                   chains = 4,
+#                     iter = 3000, warmup = 1000,
+#                     cores = 4,
+#                     control = list(adapt_delta = 0.95), inits = 0)
+# 
+# ordbeta_NASA_effort_p <- comb_effort %>%
+#   filter(Effort > 0) %>%
+#   # data_grid(irt_effort = seq(from = 0, to = 1, length = 101), person) %>%
+#   tidyr::expand(nesting(person),
+#                 irt_effort = seq(from = 0, to = 1, length = 101)) %>%
+#   add_epred_draws(ordbeta_NASA_effort) %>%
+#   ggplot(aes(x = irt_effort*100, y = .epred*100)) +
+#   stat_lineribbon(aes(y = .epred*100, fill_ramp = stat(.width)), alpha = 0.8, .width = ppoints(50), fill = "grey") +
+#   ggdist::scale_fill_ramp_continuous(range = c(1, 0)) +
+#   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+#   scale_y_continuous(limits = c(0,100)) +
+#   scale_x_continuous(limits = c(0,100)) +
+#   labs(title = "IRT (1PL) Estimated Effort and NASA-TLX Effort",
+#        subtitle = "Mixed Effects Ordered Beta Regression",
+#        y = "NASA-TLX Effort (Ordered Beta Transformation; %)",
+#        x = expression("IRT Estimated Effort = exp("~beta~")/exp("~theta~")")) +
+#   theme_classic()
+# 
+# ordbeta_NASA_effort_p
 
 
 ```
 
 
 ```{r, echo=FALSE, message=FALSE}
-# SV ~ IRT Effort
-comb_effort_SV <- comb_effort %>%
-  filter(!is.na(SV)) %>%
-  add_row(SV_effort = 0) %>%
-  add_row(SV_effort = 1)
-
-ordbeta_SV_effort <- ordbetareg(formula = SV_effort ~ irt_effort + (irt_effort | person),
-                                  data = comb_effort,
-                                  chains = 4,
-                    iter = 3000, warmup = 1000,
-                    cores = 4,
-                    control = list(adapt_delta = 0.95), inits = 0)
-
-ordbeta_SV_effort_p <- comb_effort_SV %>%
-  filter(SV_effort > 0) %>%
-  # data_grid(irt_effort = seq(from = 0, to = 1, length = 101), person) %>%
-  tidyr::expand(nesting(person),
-                irt_effort = seq(from = 0, to = 1, length = 101)) %>%
-  add_epred_draws(ordbeta_SV_effort) %>%
-  ggplot(aes(x = irt_effort*100, y = .epred*100)) +
-  stat_lineribbon(aes(y = .epred*100, fill_ramp = stat(.width)), alpha = 0.8, .width = ppoints(50), fill = "grey") +
-  ggdist::scale_fill_ramp_continuous(range = c(1, 0)) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  scale_y_continuous(limits = c(0,100)) +
-  scale_x_continuous(limits = c(0,100)) +
-  labs(title = "IRT (1PL) Estimated Effort and Inverse Relative Subjective Value",
-       subtitle = "Mixed Effects Ordered Beta Regression",
-       y = "Subjective Effort Cost (%)",
-       x = expression("IRT Estimated Effort = exp("~beta~")/exp("~theta~")")) +
-  theme_classic()
-
-SV_effort_p
+# # SV ~ IRT Effort
+# comb_effort_SV <- comb_effort %>%
+#   filter(!is.na(SV)) %>%
+#   add_row(SV_effort = 0) %>%
+#   add_row(SV_effort = 1)
+# 
+# ordbeta_SV_effort <- ordbetareg(formula = SV_effort ~ irt_effort + (irt_effort | person),
+#                                   data = comb_effort,
+#                                   chains = 4,
+#                     iter = 3000, warmup = 1000,
+#                     cores = 4,
+#                     control = list(adapt_delta = 0.95), inits = 0)
+# 
+# ordbeta_SV_effort_p <- comb_effort_SV %>%
+#   filter(SV_effort > 0) %>%
+#   # data_grid(irt_effort = seq(from = 0, to = 1, length = 101), person) %>%
+#   tidyr::expand(nesting(person),
+#                 irt_effort = seq(from = 0, to = 1, length = 101)) %>%
+#   add_epred_draws(ordbeta_SV_effort) %>%
+#   ggplot(aes(x = irt_effort*100, y = .epred*100)) +
+#   stat_lineribbon(aes(y = .epred*100, fill_ramp = stat(.width)), alpha = 0.8, .width = ppoints(50), fill = "grey") +
+#   ggdist::scale_fill_ramp_continuous(range = c(1, 0)) +
+#   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+#   scale_y_continuous(limits = c(0,100)) +
+#   scale_x_continuous(limits = c(0,100)) +
+#   labs(title = "IRT (1PL) Estimated Effort and Inverse Relative Subjective Value",
+#        subtitle = "Mixed Effects Ordered Beta Regression",
+#        y = "Subjective Effort Cost (%)",
+#        x = expression("IRT Estimated Effort = exp("~beta~")/exp("~theta~")")) +
+#   theme_classic()
+# 
+# SV_effort_p
 
 ```
 
