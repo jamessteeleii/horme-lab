@@ -123,12 +123,12 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept   101.56      0.41   100.78   102.35 1.00     3721     2976
-## theta         3.74      0.06     3.62     3.86 1.00     4153     2772
+## Intercept   101.60      0.40   100.82   102.36 1.00     3512     2914
+## theta         3.72      0.06     3.61     3.84 1.00     4520     3043
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     4.06      0.29     3.53     4.68 1.00     3558     3195
+## sigma     4.07      0.30     3.54     4.69 1.00     3747     2774
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -144,12 +144,12 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept   103.38      1.76    99.88   106.96 1.00     3306     2688
-## beta          3.66      0.12     3.42     3.89 1.00     3402     2623
+## Intercept   103.07      1.84    99.54   106.85 1.00     2929     2190
+## beta          3.66      0.11     3.43     3.88 1.00     3147     2548
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     7.95      1.43     5.75    11.28 1.00     2895     2657
+## sigma     7.92      1.47     5.64    11.38 1.00     2759     2318
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -162,28 +162,28 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 {\theta_{j(transf)}} \times 100%\]</span></p>
 <p><span class="math display">\[\beta_{i(transf)} &gt; \theta_{j(transf)} \Rightarrow E_{A,(ji,IRT)} = 100%\]</span></p>
 <p>Now we have two sets of actual effort in our dataset; we have the original actual effort calculated directly from the 1RM and loads (<span class="math inline">\(E_{A(ji)}\)</span>) and also and effort calculated from our transformed estimates of ability and difficulty (<span class="math inline">\(E_{A(ji,IRT)}\)</span>).</p>
-<pre><code>##    person   one_RM item actual_effort    theta        beta theta_to_raw
-## 1    p001 103.3932   10      9.671814 1.250525 -23.9837287     106.2398
-## 2    p001 103.3932   20     19.343628 1.250525 -24.0255274     106.2398
-## 3    p001 103.3932   30     29.015442 1.250525 -16.9201143     106.2398
-## 4    p001 103.3932   40     38.687256 1.250525 -16.9095356     106.2398
-## 5    p001 103.3932   50     48.359070 1.250525 -16.9241591     106.2398
-## 6    p001 103.3932   60     58.030884 1.250525 -13.2902123     106.2398
-## 7    p001 103.3932   70     67.702698 1.250525 -10.1662548     106.2398
-## 8    p001 103.3932   80     77.374512 1.250525  -6.3659102     106.2398
-## 9    p001 103.3932   90     87.046326 1.250525  -3.8940422     106.2398
-## 10   p001 103.3932  100     96.718140 1.250525  -0.3808759     106.2398
+<pre><code>##    person   one_RM item actual_effort   theta        beta theta_to_raw
+## 1    p001 103.3932   10      9.671814 1.25077 -23.9547152     106.2544
+## 2    p001 103.3932   20     19.343628 1.25077 -23.9230662     106.2544
+## 3    p001 103.3932   30     29.015442 1.25077 -16.8780428     106.2544
+## 4    p001 103.3932   40     38.687256 1.25077 -16.8764711     106.2544
+## 5    p001 103.3932   50     48.359070 1.25077 -16.8987563     106.2544
+## 6    p001 103.3932   60     58.030884 1.25077 -13.2056382     106.2544
+## 7    p001 103.3932   70     67.702698 1.25077 -10.1221819     106.2544
+## 8    p001 103.3932   80     77.374512 1.25077  -6.3022157     106.2544
+## 9    p001 103.3932   90     87.046326 1.25077  -3.8182128     106.2544
+## 10   p001 103.3932  100     96.718140 1.25077  -0.2936207     106.2544
 ##    beta_to_raw irt_effort
-## 1     15.64746   14.72843
-## 2     15.49457   14.58452
-## 3     41.48471   39.04819
-## 4     41.52341   39.08461
-## 5     41.46992   39.03426
-## 6     54.76215   51.54580
-## 7     66.18895   62.30146
-## 8     80.08983   75.38590
-## 9     89.13142   83.89645
-## 10   101.98186   95.99215</code></pre>
+## 1     15.47079   14.56013
+## 2     15.58653   14.66906
+## 3     41.34980   38.91583
+## 4     41.35555   38.92124
+## 5     41.27405   38.84454
+## 6     54.77959   51.55511
+## 7     66.05562   62.16740
+## 8     80.02504   75.31454
+## 9     89.10890   83.86370
+## 10   101.99815   95.99425</code></pre>
 <p>Now, because we have multiple observations for each individuals we can fit a mixed effects model with random intercepts and slopes to explore how well the <span class="math inline">\(E_{A(ji,IRT)}\)</span> estimates <span class="math inline">\(E_{A(ji)}\)</span>. Given the conceptualisation of effort as being a bounded construct on the 0% to 100% interval we should use a model taking that into account and so we fit an ordered beta regression model<a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a>.</p>
 <p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>This doesn’t look too bad to be fair. In fact, while it slightly underestimates at the lower bounds, it’s pretty darn good in my opinion and leaves me feeling fairly confident in using <span class="math inline">\(E_{A(ji,IRT)}\)</span> as my operationalisation for <span class="math inline">\(E_{A(ji)}\)</span>.</p>
