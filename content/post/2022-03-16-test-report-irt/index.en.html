@@ -1,12 +1,12 @@
 ---
-title: Test - report IRT
-author: ''
-date: '2022-03-16'
-slug: test-report-irt
+title: "Actual Effort in Cognitive Tasks"
+subtitle: Can Item Response Theory help with operationalisation?
+date: '2022-01-29T16:06:15Z'
 categories: []
 tags: []
-subtitle: ''
-summary: ''
+summary: Item Response Theory assumes latent abilities, and varying difficulties for
+  items... both could be useful, given my conceptual definition, for operationalising
+  actual effort
 authors: []
 lastmod: '2022-03-16T09:26:03Z'
 featured: no
@@ -123,12 +123,12 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept   101.61      0.41   100.81   102.41 1.00     3455     2577
-## theta         3.74      0.06     3.63     3.86 1.00     3814     2854
+## Intercept   101.56      0.41   100.78   102.35 1.00     3721     2976
+## theta         3.74      0.06     3.62     3.86 1.00     4153     2772
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     4.04      0.30     3.51     4.65 1.00     3705     2649
+## sigma     4.06      0.29     3.53     4.68 1.00     3558     3195
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -144,12 +144,12 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept   103.12      1.81    99.47   106.61 1.00     3421     2843
-## beta          3.65      0.12     3.41     3.89 1.00     2948     2328
+## Intercept   103.38      1.76    99.88   106.96 1.00     3306     2688
+## beta          3.66      0.12     3.42     3.89 1.00     3402     2623
 ## 
 ## Family Specific Parameters: 
 ##       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sigma     7.91      1.40     5.73    11.11 1.00     2544     2333
+## sigma     7.95      1.43     5.75    11.28 1.00     2895     2657
 ## 
 ## Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -163,28 +163,29 @@ Where the IRT subscript denotes that it is estimated from the IRT model.</p>
 <p><span class="math display">\[\beta_{i(transf)} &gt; \theta_{j(transf)} \Rightarrow E_{A,(ji,IRT)} = 100%\]</span></p>
 <p>Now we have two sets of actual effort in our dataset; we have the original actual effort calculated directly from the 1RM and loads (<span class="math inline">\(E_{A(ji)}\)</span>) and also and effort calculated from our transformed estimates of ability and difficulty (<span class="math inline">\(E_{A(ji,IRT)}\)</span>).</p>
 <pre><code>##    person   one_RM item actual_effort    theta        beta theta_to_raw
-## 1    p001 103.3932   10      9.671814 1.222314 -23.9347884     106.1787
-## 2    p001 103.3932   20     19.343628 1.222314 -24.0337432     106.1787
-## 3    p001 103.3932   30     29.015442 1.222314 -16.8543158     106.1787
-## 4    p001 103.3932   40     38.687256 1.222314 -16.8213554     106.1787
-## 5    p001 103.3932   50     48.359070 1.222314 -16.8456327     106.1787
-## 6    p001 103.3932   60     58.030884 1.222314 -13.2156128     106.1787
-## 7    p001 103.3932   70     67.702698 1.222314 -10.1286259     106.1787
-## 8    p001 103.3932   80     77.374512 1.222314  -6.3243028     106.1787
-## 9    p001 103.3932   90     87.046326 1.222314  -3.8478628     106.1787
-## 10   p001 103.3932  100     96.718140 1.222314  -0.3276461     106.1787
+## 1    p001 103.3932   10      9.671814 1.250525 -23.9837287     106.2398
+## 2    p001 103.3932   20     19.343628 1.250525 -24.0255274     106.2398
+## 3    p001 103.3932   30     29.015442 1.250525 -16.9201143     106.2398
+## 4    p001 103.3932   40     38.687256 1.250525 -16.9095356     106.2398
+## 5    p001 103.3932   50     48.359070 1.250525 -16.9241591     106.2398
+## 6    p001 103.3932   60     58.030884 1.250525 -13.2902123     106.2398
+## 7    p001 103.3932   70     67.702698 1.250525 -10.1662548     106.2398
+## 8    p001 103.3932   80     77.374512 1.250525  -6.3659102     106.2398
+## 9    p001 103.3932   90     87.046326 1.250525  -3.8940422     106.2398
+## 10   p001 103.3932  100     96.718140 1.250525  -0.3808759     106.2398
 ##    beta_to_raw irt_effort
-## 1     15.66461   14.75305
-## 2     15.30303   14.41252
-## 3     41.53598   39.11892
-## 4     41.65641   39.23235
-## 5     41.56770   39.14880
-## 6     54.83145   51.64070
-## 7     66.11100   62.26388
-## 8     80.01163   75.35561
-## 9     89.06031   83.87773
-## 10   101.92284   95.99177</code></pre>
+## 1     15.64746   14.72843
+## 2     15.49457   14.58452
+## 3     41.48471   39.04819
+## 4     41.52341   39.08461
+## 5     41.46992   39.03426
+## 6     54.76215   51.54580
+## 7     66.18895   62.30146
+## 8     80.08983   75.38590
+## 9     89.13142   83.89645
+## 10   101.98186   95.99215</code></pre>
 <p>Now, because we have multiple observations for each individuals we can fit a mixed effects model with random intercepts and slopes to explore how well the <span class="math inline">\(E_{A(ji,IRT)}\)</span> estimates <span class="math inline">\(E_{A(ji)}\)</span>. Given the conceptualisation of effort as being a bounded construct on the 0% to 100% interval we should use a model taking that into account and so we fit an ordered beta regression model<a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a>.</p>
+<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>This doesn’t look too bad to be fair. In fact, while it slightly underestimates at the lower bounds, it’s pretty darn good in my opinion and leaves me feeling fairly confident in using <span class="math inline">\(E_{A(ji,IRT)}\)</span> as my operationalisation for <span class="math inline">\(E_{A(ji)}\)</span>.</p>
 </div>
 <div id="summary-and-conclusion" class="section level3">
