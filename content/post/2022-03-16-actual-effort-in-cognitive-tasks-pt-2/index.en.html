@@ -1,0 +1,85 @@
+---
+title: Actual Effort in Cognitive Tasks (pt 2)
+author: ''
+date: '2022-03-16'
+slug: actual-effort-in-cognitive-tasks-pt-2
+categories: []
+tags: []
+subtitle: ''
+summary: In this post I get hold of some real data to test out my idea of using Item Response Theory for operationalising actual effort
+authors: []
+lastmod: '2022-03-16T13:50:45Z'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="{{< blogdown/postref >}}index.en_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="recap" class="section level3">
+<h3><em>Recap</em></h3>
+<p>You can read part 1 of my exploration of using Item Response Theory (IRT) for operationalisation of actual effort in cognitive tasks <a href="https://www.hormelab.com/post/irt_actual_effort/">here</a>.</p>
+<p>But here’s a very quick TLDR recap of the thinking from it’s conclusion:</p>
+<blockquote>
+<p>“Key assumptions underlying IRT models and their parameters, <em>ability</em> and <em>difficulty</em>, map conceptually well onto the assumed primitives, <em>capacity</em> and <em>demands</em>, in my definition of effort. Given this, IRT models seem like a useful approach to operationalisation of <em>actual effort</em> in cognitive tasks. In fact, using the example of a test involving lifting weights where we actually know a persons underlying ability/capacity and the difficulty/demands of each item in the test, the estimates of effort that result from an IRT model are pretty reasonable estimates of the actual effort we could calculate from direct measurements.”</p>
+</blockquote>
+<p>In the post, I used the analogy of testing the ability of ‘strength’ through lifting different loads and fit a 1-parameter logistic (1PL, or Rasch model) to some simulated data representing people with varying strength levels lifting different loads successfully or not depending on this. This toy example demonstrated quite nicely (if I do say so myself) that in principle we can use IRT models to estimate the actual effort required for a given person performing a given task/item. As a result, I think it could be a promising approach to exploring effort psychophysics in cognitive tasks i.e., the relationship between actual effort, and perception of effort.</p>
+<p>But how does it work out when we introduce it to some real data? I got hold of a dataset where I was able to fit IRT models to the cognitive tasks performed, and where they had also captured some operationalisation of perception of effort.</p>
+</div>
+<div id="measurement-scale-issues" class="section level3">
+<h3><em>Measurement scale issues</em></h3>
+<p>Before I get to the actual dataset, we first need to talk about the issues with IRT models for my ideas about estimating effort as:</p>
+<p><span class="math display">\[\theta_{j}=C_{A(j)}\]</span>
+<span class="math display">\[\beta_{i}=D_{A(i)}\]</span></p>
+<p><span class="math display">\[\beta_{i} \leq \theta_{j} \Rightarrow E_{A(ji,IRT)} = \frac{ 
+    \beta_{i}}
+{\theta_{j}} \times 100%\]</span></p>
+<p><span class="math display">\[\beta_{i} &gt; \theta_{j} \Rightarrow E_{A(ji,IRT)} = 100%\]</span></p>
+<p>Where, for each person we test <span class="math inline">\(j(j=1,...,J)\)</span>, and each item in a test they complete <span class="math inline">\(i(i=1,...,I)\)</span>, <span class="math inline">\(\theta_{j}\)</span> is the IRT estimated person latent ability, <span class="math inline">\(C_{A(j)}\)</span> is the actual capacity, <span class="math inline">\(\beta_{i}\)</span> is the IRT estimated item difficulty parameter, <span class="math inline">\(D_{A(i)}\)</span> is the actual item demands, and <span class="math inline">\(E_{A(ji,IRT)}\)</span> is the actual effort that it is estimated from the IRT model.</p>
+<p>A problem is that common IRT models are typically estimated on the <span class="math inline">\(logit\)</span> scale which ranges <span class="math inline">\(-\infty,\infty\)</span>. This poses some problems for us when it comes to calculating <span class="math inline">\(E_{A(ji,IRT)}\)</span> from the ratio of <span class="math inline">\(\beta_{i}\)</span> to <span class="math inline">\(\theta_{j}\)</span> as <span class="math inline">\(logit\)</span> scale does not have ratio properties. Now, I did mention that there are various ways of transforming the <span class="math inline">\(logit\)</span> scale that both preserves the underlying probabilities for a given <span class="math inline">\(\theta\)</span> completing a given item with difficulty <span class="math inline">\(\beta\)</span>. For example, the 1PL model can undergo linear transformation without altering the underlying mathematical model and we can have <span class="math inline">\(\theta_{transf}\)</span> and <span class="math inline">\(\beta_{transf}\)</span>. This gave me the idea for the weight lifting toy example. Given I had the <span class="math inline">\(C_{A(j)}\)</span> because I simulated it, and had also chosen the <span class="math inline">\(D_{A(i)}\)</span> which these simulated people would try to meet, and all in its raw units (kg), once I had fit the 1PL model I could fit simple linear models to transform <span class="math inline">\(\theta_{j}\)</span> and <span class="math inline">\(\beta_{i}\)</span> back to the raw kg units <span class="math inline">\(\theta_{j(transf)}\)</span> and <span class="math inline">\(\beta_{i(transf)}\)</span>.</p>
+<p>However, I hit a bit of a snag thinking through this with typical cognitive tasks. It’s not as simple as with my toy example to put <span class="math inline">\(\theta_{j}\)</span> and <span class="math inline">\(\beta_{i}\)</span> onto ratio scales in a meaningful way… For example, It seems ontologically odd to me to have ability on the logit scale. I mean, does anyone really conceptualise <span class="math inline">\(\theta_{j}\)</span> in some task as really ranging from <span class="math inline">\(-\infty,\infty\)</span>? Do we not think there’s at least some floor (i.e., you can’t do any difficulty item)? Also, transformation back to sum scores, or even proportions accurate (akin to the test characteristics curve) seems <em>odd</em> for <span class="math inline">\(\beta_{i}\)</span>.</p>
+<p><em>Odd</em>?</p>
+<p>Oh, then it suddenly hit me… <span class="math inline">\(\theta_{j}\)</span> and <span class="math inline">\(\beta_{i}\)</span> could be placed back onto ratio scales in a meaningful way: the <em>odds</em> scale.</p>
+<p>This approach is somewhat limited to the application of 1PL/Rasch type IRT models<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> but it’s something to start with.</p>
+<p>Under the odds formulation of the 1PL/Rasch model we estimate actual effort in cognitive tasks as:</p>
+<p><span class="math display">\[exp(\theta_{j})=C_{A(j)}\]</span>
+<span class="math display">\[exp(\beta_{i})=D_{A(i)}\]</span></p>
+<p><span class="math display">\[exp(\beta_{i}) \leq exp(\theta_{j}) \Rightarrow E_{A(ji,IRT)} = \frac{ 
+    exp(\beta_{i})}
+{exp(\theta_{j})} \times 100%\]</span></p>
+<p><span class="math display">\[exp(\beta_{i}) &gt; exp(\theta_{j}) \Rightarrow E_{A(ji,IRT)} = 100%\]</span></p>
+<p>Working with the assumption as I do that…</p>
+<blockquote>
+<p>“…the perception of effort appears at best a coarsegrained representation of actual effort which is probably a result of the introduction of ‘noise’ into the signal from both the sensory systems, and the perceptual system. As such, although the directional patterns of perception of effort often follow those we would expect based upon actual effort, they are ‘fuzzy’ and inaccurate representations of reality.”<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+</blockquote>
+<p>We’d expect to at the very least see positive directional relationships between our IRT operationalisation of actual (objective) effort (i.e., <span class="math inline">\(E_{A(ji,IRT)}\)</span>) and operationalisations of perception of (subjective) effort, or subjective effort.</p>
+<p>So let’s take a look at an example dataset.</p>
+</div>
+<div id="n-back-tasks-nasa-tlx-and-effort-discounting" class="section level3">
+<h3><em>N-Back tasks, NASA-TLX, and Effort Discounting</em></h3>
+<p>Andrew Westbrook was kind enough to share with me all the data from his 2013 PloS One study with Daria Kester and Todd Braver:</p>
+<center>
+<p><a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0068210"><em>What Is the Subjective Cost of Cognitive Effort? Load, Trait, and Aging Effects Revealed by Economic Preference</em></a></p>
+</center>
+<p>In this study both young and old adults performed the N-Back task<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> over varying difficulty levels (1-6-Back). They also captured two different operationalisations <em>related</em> to the subjective nature of effort. Firstly, they captured the NASA Task Load Index (NASA-TLX)<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> which here I assume is an operationalisation of the perception of effort i.e., the phenomenological experience. Secondly, they also determined the subjective value/cost of effort using a cognitive effort discounting paradigm<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a> which I’m not sure is wholly reflective of the perception of effort <em>per se</em><a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> but is interesting to explore nonetheless. So in all we have a cognitive task (N-Back) which we can apply an IRT model to in order to operationalise the actual (objective) effort, and a couple of different operationalisation of the perception of (subjective) effort.</p>
+<p>So firstly let’s fit the 1PL model to the N-Back data treating each level (1-6) as an item. Here’s the Item Characteristic Curves across the items:</p>
+<p>Nice. The 1PL model shows what we would expect from increasing N-Back: that the difficulty of each item increases with the N trials ago that someone is trying to remember.</p>
+<p>From this we can pull out the random effects for person and item, <span class="math inline">\(\theta_{j}\)</span> and <span class="math inline">\(\beta_{i}\)</span>, and then we can exponentiate them to put them back on the odds scale to calculate <span class="math inline">\(E_{A(ji,IRT)}\)</span>. Then we rejoin it with the effort scale from the NASA-TLX, and the subjective cost of effort determined from the effort discounting paradigm, and can begin to model the relationship between <span class="math inline">\(E_{A(ji,IRT)}\)</span> and both these operationlisations of perception of (subjective) effort.</p>
+<p>First we will look at the NASA-TLX data. Now, the NASA-TLX is an ordinal scale and so we might consider using cummulative ordinal regression on the probit scale. But this model assumes that the data arises from unbounded normal distributions where our underlying latent variable of perception of effort is conceptually bounded. So we should use a model to reflect that such as ordered beta regression<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>. Similarly to the previous post we fit a mixed effects model with random intercepts and slopes to explore how well <span class="math inline">\(E_{A(ji,IRT)}\)</span> is related to the Effort scale of the NASA-TLX.</p>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>See this nice thesis by Rebecca Freund <a href="https://escholarship.org/uc/item/1vh141kq"><em>Rasch and Rationality: Scale typologies as applied to Item Response Theory</em></a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://www.hormelab.com/what_is_effort/">What is (perception of) effort? Objective and subjective effort during attempted task performance</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>Free demo of the 2-back task as an example <a href="https://www.psytoolkit.org/experiment-library/nback2.html">here</a> for those that don’t know what this involves… at the higher levels it’s pretty tough.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>The <a href="https://humansystems.arc.nasa.gov/groups/tlx/downloads/TLXScale.pdf">NASA-TLX</a> is a six item state questionnaire, one of which asks about the effort required i.e., “How hard did you have to work to accomplish your level of performance?”. It’s not ideal in my opinion given my conceptual definition of perception of effort, but it’ll do for current purposes.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>Westbrook et al. describe it as follows: <em>“The key feature of this paradigm is that participants choose whether to perform a low-effort task for a small monetary reward or a high-effort task for a larger reward (Figure 1). Multiple choices are made, and the amount offered for the low-effort task is titrated until subjective equivalence is reached (the offers are equally preferred). The additional amount required to make the high- and low-effort task equivalent quantifies the cost of cognitive effort, or the degree to which increased cognitive effort diminishes the value of task engagement. The objective load of the high-effort task can also be varied parametrically. As such, the procedure is formally analogous to the estimation of discounting across a range of delays in delay discounting. Unlike discounting procedures involving hypothetical costs or rewards, participants make choices about tasks that they are actually paid for re-doing, promoting test validity.”</em><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p>It is often assumed that effort is inherently aversive and so the valuation of effort says something about the subjective experience of it. But as Inzlicht et al. have <a href="https://pubmed.ncbi.nlm.nih.gov/29477776/">suggested</a> effort can be both costly and valued. In fact, some people often seek out effortful experiences. For example, I like to engage in resistance training, and when I do so I deliberately aim to do so with maximum effort (i.e., to task failure). In such a situation the subjective valuation of the effort experienced would not necessarily follow the direction which would be assumed if it were inherently aversive.<a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p>As with the previous post I use the {ordbetareg} package that overlays {brms}, from Robert Kubinec <a href="https://osf.io/preprints/socarxiv/2sx6y/">see here</a> and which does the job of normalising the variable to the [0,1] interval to fit the ordered beta regression model.<a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
